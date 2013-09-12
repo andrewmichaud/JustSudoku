@@ -1,1 +1,0 @@
-PKG_CHECK_MODULES([MYAPP], [gtkmm-3.0 >= 3.0.0])
