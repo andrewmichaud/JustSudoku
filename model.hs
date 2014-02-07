@@ -6,9 +6,6 @@ import qualified Data.Vector as V
 import Data.Maybe
 import qualified Data.List
 
-data Value = Number Int deriving (Show)
-
--- data Board = SudokuBoard [Int] [Int] [Int] [Int] [Int] [Int] [Int] [Int] [Int]
 
 -- Main function
 main = do
