@@ -5,7 +5,6 @@
 module SudokuBoard
 ( SudokuBoard
 , SquareValue
-, Position(..)
 , emptyBoard
 ) where
 
@@ -89,5 +88,18 @@ setBoardValue (SudokuBoard board) rowIndex colIndex newValue
         rowToMod  = board !! rowIndex
         newRow    = take colIndex rowToMod ++ [Number newValue] ++ drop (colIndex + 1) rowToMod
 	oldValue  = rowToMod !! colIndex 
+
+-- Checks that a row has no duplicate SquareValues.
+checkRow :: [SquareValue] -> Bool
+checkRow row = answer
+    where
+        filtered = filter (/=Nothing) row
+        answer   = (length row) == (length filtered)
+
+-- Checks if a SudokuBoard is currently valid or not.
+--checkBoard :: SudokuBoard -> Bool
+--checkBoard (SudokuBoard board) = value
+--    where
+        
 
 
