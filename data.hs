@@ -4,28 +4,79 @@
 
 module SudokuBoard
 ( SudokuBoard
-, SquareValue
+, Square
+, SqVal
 , emptyBoard
 ) where
 
-import Prelude hiding (Nothing)
+import Data.Maybe
 import qualified Data.List
 
--- Position type to make selecting a position easier.
-data Position = Position {row::Int,  col::Int} deriving (Eq, Show)
+data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 deriving (Eq, Ord, Enum, Show)
 
-    
+toVal :: Int -> Maybe SqVal
+toVal 1 = Just V1
+toVal 2 = Just V2
+toVal 3 = Just V3
+toVal 4 = Just V4
+toVal 5 = Just V5
+toVal 6 = Just V6
+toVal 7 = Just V7
+toVal 8 = Just V8
+toVal 9 = Just V9
+toVal _ = Nothing
+
 -- Type for Sudoku square value.
-data SquareValue = Number Int | Nothing deriving (Eq)
+data Square = Empty | Val SqVal deriving (Eq)
 
 -- Show either the number, or "N" for nothing.
-instance Show SquareValue where
-    show (Number num) = show num
-    show (Nothing)    = "N"
+instance Show Square where
+    show (Val value) = show value
+    show (Empty)    = "N"
 
 -- Type for Sudoku board.
-data SudokuBoard = SudokuBoard [[SquareValue]] deriving ()
+data SudokuBoard = SudokuBoard [[Square]] deriving ()
 
+-- Check if a pair of Squares are equal.
+checkPair :: Square -> Square -> Bool
+checkPair (Val squareA) (Val squareB) = (squareA == squareB)
+checkPair _ _ = False
+
+-- Get all pairs of values in a list.
+allPairs :: [a] -> [(a, a)]
+allPairs list
+    | listLength == 2 = [(firstElem, lastElem)]
+    | otherwise       = pairs
+    where
+        listLength = length list
+        firstElem = head list
+        lastElem = last list
+        remainingElems = tail list
+    
+        -- Pairs in the list that don't use the first element.
+        restPairs    = (allPairs remainingElems)
+        restLength   = listLength - 1
+
+        -- Generate a list of pairs including the first element.
+        repeatedHead = replicate restLength head
+        headPairs    = zip repeatedHead remainingElems
+
+        -- Get a list of all pairs.
+        pairs        = headPairs ++ restPairs
+
+-- Check a list of Squares and returns a list of pairs that are equal.
+--checkList :: [Square] -> [(Square, Square)]
+--checkList squareList = answer
+--    where
+--        pairs = allPairs squareList
+        
+
+
+-- Checks that a row has no duplicate SquareValues.
+--checkRow :: [SquareValue] -> (Bool, [String])
+--checkRow row = findAndMarkDupes row
+
+-- Checks if a SudokuBoard is currently valid or not.
 -- Given an array and a spacer, uses the spacer to separate
 -- the first three from the middle three rows and the middle
 -- three from the last three rows.
@@ -60,46 +111,75 @@ instance Show SudokuBoard where
 
 -- Creates empty Sudoku board.
 emptyBoard :: SudokuBoard
-emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Nothing))]
+emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Empty))]
 
 -- Get the value in a particular square of a Sudoku board.
-getBoardValue :: SudokuBoard -> Int -> Int -> Maybe SquareValue
+getBoardValue :: SudokuBoard -> Int -> Int -> Square
 getBoardValue (SudokuBoard board) rowIndex colIndex
-    -- Check if out of bounds.
-    | rowIndex > 8 || rowIndex < 0 = Just Nothing
-    | colIndex > 8 || colIndex < 0 = Just Nothing
+    
+-- Check if out of bounds.
+    | rowIndex > 8 || rowIndex < 0 = Empty
+    | colIndex > 8 || colIndex < 0 = Empty
+    
     -- Otherwise return value.
-    | otherwise    = Just value
+    | otherwise                    = value
     where
         row   = board !! rowIndex
         value = row !! colIndex
 
--- Returns a SudokuBoard with the value at the two indexes modified.
-setBoardValue :: SudokuBoard -> Int -> Int -> Int -> SudokuBoard
-setBoardValue (SudokuBoard board) rowIndex colIndex newValue 
+-- Returns a SudokuBoard with the value at the two indices erased.
+eraseBoardValue :: SudokuBoard -> Int -> Int -> SudokuBoard
+eraseBoardValue (SudokuBoard board) rowIndex colIndex
     -- Check if out of bounds.
     | rowIndex > 8 || rowIndex < 0 = SudokuBoard board
     | colIndex > 8 || colIndex < 0 = SudokuBoard board
+    
     -- Check if we aren't actually changing a value.
-    | oldValue == Number newValue  = SudokuBoard board
+    | oldSquare == Empty           =  SudokuBoard board
+
+    -- Return new board if everything seems all right.
     | otherwise                    = SudokuBoard newBoard
     where
-	newBoard  = take rowIndex board ++ [newRow] ++ drop (colIndex + 1) board
+        -- Grab the row we care about modifying.
+        -- Also grab square from that row.
         rowToMod  = board !! rowIndex
-        newRow    = take colIndex rowToMod ++ [Number newValue] ++ drop (colIndex + 1) rowToMod
-	oldValue  = rowToMod !! colIndex 
+	oldSquare = rowToMod !! colIndex 
 
--- Checks that a row has no duplicate SquareValues.
-checkRow :: [SquareValue] -> Bool
-checkRow row = answer
+        -- Create new row.
+        newRow    = take colIndex rowToMod ++ [Empty] ++ drop (colIndex + 1) rowToMod
+
+	-- Create new board.
+        newBoard  = take rowIndex board ++ [newRow] ++ drop (colIndex + 1) board
+
+-- Returns a SudokuBoard with the value at the two indices modified.
+setBoardValue :: SudokuBoard -> Int -> Int -> Int -> SudokuBoard
+setBoardValue (SudokuBoard board) rowIndex colIndex newValue 
+    
+    -- Check if out of bounds.
+    | rowIndex > 8 || rowIndex < 0 = SudokuBoard board
+    | colIndex > 8 || colIndex < 0 = SudokuBoard board
+    
+    -- Check if we aren't actually changing a value.
+    | oldSquare == newSquare       =  SudokuBoard board
+
+    -- Return new board if everything seems all right.
+    | otherwise                    = SudokuBoard newBoard
     where
-        filtered = filter (/=Nothing) row
-        answer   = (length row) == (length filtered)
+        -- Create new square.
+        maybeVal  = toVal newValue
+        newSquare = if (isNothing maybeVal) then oldSquare else Val (fromJust maybeVal)
 
--- Checks if a SudokuBoard is currently valid or not.
---checkBoard :: SudokuBoard -> Bool
---checkBoard (SudokuBoard board) = value
---    where
+        -- Grab the row we care about modifying.
+        -- Also grab square from that row.
+        rowToMod  = board !! rowIndex
+	oldSquare = rowToMod !! colIndex 
+
+        -- Create new row.
+        newRow    = take colIndex rowToMod ++ [newSquare] ++ drop (colIndex + 1) rowToMod
+
+	-- Create new board.
+        newBoard  = take rowIndex board ++ [newRow] ++ drop (colIndex + 1) board
         
+
 
 
