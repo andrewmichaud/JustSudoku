@@ -6,8 +6,12 @@ module SudokuBoard
 ( SudokuBoard
 , Square
 , SqVal
+, toVal
 , emptyBoard
 , testRow
+, setBoardValue
+, checkBoard
+, prettyPrint
 ) where
 
 import Data.Maybe
@@ -62,7 +66,22 @@ checkList (x:xs)
         headPairs   = [(x, y) | y <- xs, checkPair x y]
         answer      = headPairs ++ checkList xs
         
+-- Retrieves a specified column from a 2D list.
+getColumn :: [[a]] -> Int -> [a]
+getColumn list index = [row !! index| row <- list]
+
 -- Checks if a SudokuBoard is currently valid or not.
+-- Checks all rows, columns, and subgrids with checkList and returns a 
+-- list of matching pairs.
+checkBoard :: SudokuBoard -> [(Square, Square)]
+checkBoard (SudokuBoard board) = allPairs
+    where
+        rowPairs = concat $ map checkList board
+        columns  = [getColumn board index | index <- [0..9]]
+        colPairs = concat $ map checkList board
+        allPairs = colPairs ++ rowPairs
+
+
 -- Given an array and a spacer, uses the spacer to separate
 -- the first three from the middle three rows and the middle
 -- three from the last three rows.
@@ -119,19 +138,12 @@ eraseBoardValue (SudokuBoard board) rowIndex colIndex
     | rowIndex > 8 || rowIndex < 0 = Nothing
     | colIndex > 8 || colIndex < 0 = Nothing
     
-    -- Check if we aren't actually changing a value.
-    | oldSquare == Empty           =  Just $ SudokuBoard board
-
     -- Return new board if everything seems all right.
     | otherwise                    = Just $ SudokuBoard newBoard
     where
-        -- Grab the row we care about modifying.
-        -- Also grab square from that row.
-        rowToMod  = board !! rowIndex
-	oldSquare = rowToMod !! colIndex 
-
+        oldRow    = board !! rowIndex
         -- Create new row.
-        newRow    = take colIndex rowToMod ++ [Empty] ++ drop (colIndex + 1) rowToMod
+        newRow    = take colIndex oldRow ++ [Empty] ++ drop (colIndex + 1) oldRow
 
 	-- Create new board.
         newBoard  = take rowIndex board ++ [newRow] ++ drop (colIndex + 1) board
@@ -139,30 +151,19 @@ eraseBoardValue (SudokuBoard board) rowIndex colIndex
 -- Take squares? Return errors?
 
 -- Returns a SudokuBoard with the value at the two indices modified.
-setBoardValue :: SudokuBoard -> Int -> Int -> Int -> SudokuBoard
-setBoardValue (SudokuBoard board) rowIndex colIndex newValue 
+setBoardValue :: SudokuBoard -> Int -> Int -> Square -> Maybe SudokuBoard
+setBoardValue (SudokuBoard board) rowIndex colIndex newSquare
     
     -- Check if out of bounds.
-    | rowIndex > 8 || rowIndex < 0 = SudokuBoard board
-    | colIndex > 8 || colIndex < 0 = SudokuBoard board
+    | rowIndex > 8 || rowIndex < 0 = Nothing
+    | colIndex > 8 || colIndex < 0 = Nothing
     
-    -- Check if we aren't actually changing a value.
-    | oldSquare == newSquare       =  SudokuBoard board
-
     -- Return new board if everything seems all right.
-    | otherwise                    = SudokuBoard newBoard
+    | otherwise                    = Just $ SudokuBoard newBoard
     where
-        -- Create new square.
-        maybeVal  = toVal newValue
-        newSquare = if (isNothing maybeVal) then oldSquare else Val (fromJust maybeVal)
-
-        -- Grab the row we care about modifying.
-        -- Also grab square from that row.
-        rowToMod  = board !! rowIndex
-	oldSquare = rowToMod !! colIndex 
-
+        oldRow    = board !! rowIndex
         -- Create new row.
-        newRow    = take colIndex rowToMod ++ [newSquare] ++ drop (colIndex + 1) rowToMod
+        newRow    = take colIndex oldRow ++ [newSquare] ++ drop (colIndex + 1) oldRow
 
 	-- Create new board.
         newBoard  = take rowIndex board ++ [newRow] ++ drop (colIndex + 1) board
