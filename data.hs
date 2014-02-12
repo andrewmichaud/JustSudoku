@@ -46,7 +46,7 @@ instance Show Square where
     show (Empty)    = "N"
 
 -- Type for Sudoku board.
-data SudokuBoard = SudokuBoard [[Square]] deriving ()
+data SudokuBoard = SudokuBoard [[Square]] deriving (Show)
 
 -- Check if a pair of Squares are equal.
 checkPair :: Square -> Square -> Bool
@@ -74,28 +74,26 @@ sudokuSpacer spacer array = result
         last3  = drop 6 array
         result = first3 ++ [spacer] ++ mid3 ++ [spacer] ++ last3
 
--- TODO derive show, FIXME HELP do pretty printing.
 -- Show for SudokuBoard, prints it nicely.
-instance Show SudokuBoard where
-    show (SudokuBoard board) = niceBoard
-        where
-            -- Horizontal spacer line.
-            horSepLine    = unwords (replicate 17 " ")
-            
-            -- Convert all SquareValues to strings.
-            stringBoard   = map (map show) board
-            
-            -- Insert vertical spaces and then join lines into strings.
-            vSpacedBoard  = map (sudokuSpacer " ") stringBoard
-            unwordedBoard = map unwords vSpacedBoard
-           
-            -- Separate rows with horizontal space lines.
-            separated     = sudokuSpacer horSepLine unwordedBoard
-            
-            -- Join array into newline-separated string.
-            niceBoard     = unlines separated
+prettyPrint :: SudokuBoard -> String
+prettyPrint (SudokuBoard board) = niceBoard
+    where
+        -- Horizontal spacer line.
+        horSepLine    = unwords (replicate 17 " ")
+        
+        -- Convert all SquareValues to strings.
+        stringBoard   = map (map show) board
+        
+        -- Insert vertical spaces and then join lines into strings.
+        vSpacedBoard  = map (sudokuSpacer " ") stringBoard
+        unwordedBoard = map unwords vSpacedBoard
+       
+        -- Separate rows with horizontal space lines.
+        separated     = sudokuSpacer horSepLine unwordedBoard
+        
+        -- Join array into newline-separated string.
+        niceBoard     = unlines separated
  
-
 -- Creates empty Sudoku board.
 emptyBoard :: SudokuBoard
 emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Empty))]
