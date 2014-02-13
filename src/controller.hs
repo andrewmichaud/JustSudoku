@@ -25,8 +25,6 @@ repl f parse init = do
             print newstate
             repl f parse $ either id (const init) newstate
 
-parseInt
-
 main = do
 
     -- Command line arguments.
@@ -40,14 +38,4 @@ main = do
         pp      = prettyPrint board
 
     putStrLn pp
-
-    let board'  = setBoardValue board 0 1 1
-        board'' = setBoardValue board' 0 2 1
-        board''' = setBoardValue board'' 3 3 2
-        board'''' = setBoardValue board''' 4 3 2
-    putStrLn (prettyPrint board'''')
-
-    let answer = checkBoard board''''
-    putStr (show answer)
-
 
