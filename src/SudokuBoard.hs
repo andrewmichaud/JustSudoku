@@ -31,7 +31,7 @@ data Square = Empty | Val SqVal deriving (Eq)
 data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 deriving (Eq, Ord, Enum, Show)
 
 -- Type for Sudoku board.
-data SudokuBoard = SudokuBoard [[Square]] deriving (Show)
+data SudokuBoard = SudokuBoard [[Square]] deriving (Eq, Show)
 
 -- Methods visible from this module.
 
