@@ -95,7 +95,7 @@ parseLocation rowString colString = toLocation rowString colString
 -- TODO please move this elsewhere.
 -- Still borrowing from friend.
 data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError Int | 
-                 OtherError String | InvalidBoardError [(Square, Square)]
+                 OtherError String | InvalidBoardError [(Location, Location)]
 
 -- For when the error has an error?
 instance Error MoveError where
@@ -120,8 +120,7 @@ move board (Set row col val)
     | valInt   == Nothing = Left $ NaNError val
     | location == Nothing = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
     | value    == Nothing = Left $ InvalidValueError (fromJust valInt)
-    | newBoard == Nothing = Left $ OtherError "lazy"
-    | otherwise           = Right $ fromJust newBoard
+    | otherwise           = Right $ newBoard
     where
         location = parseLocation row col
         value    = parseSquare val
@@ -152,7 +151,7 @@ main = do
     --contents <- readFile filename
     
     -- Game header.
-    putStrLn "This is Sudoku-Linux version 0.1\n"
+    putStrLn "This is Sudoku-Linux version 0.2\n"
 
     -- Print original board.
     putStrLn "This is the board\n"
