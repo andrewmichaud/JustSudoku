@@ -7,5 +7,5 @@ module Move
 ) where
 
 -- Types of moves the player can make.
-data Move = Get String String | Set String String String | Check | Quit
+data Move = Set String String String | Check | Quit
 

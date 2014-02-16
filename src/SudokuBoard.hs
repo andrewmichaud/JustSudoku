@@ -120,10 +120,10 @@ prettyPrint (SudokuBoard board) = niceBoard
 
 -- Hidden in this module.
 
--- Show either the number, or "N" for nothing.
+-- Show either the number, or "E" for empty.
 instance Show Square where
     show (Val value) = show value
-    show (Empty)    = "N"
+    show (Empty)    = "E"
 
 -- Turn an int into an index value.
 toIndex :: String -> Maybe Int
