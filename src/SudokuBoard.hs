@@ -14,15 +14,19 @@ module SudokuBoard
 , getBoardValue
 , setBoardValue
 , checkBoard
+-- temp
+, checkCols
+, checkRows
+, checkSubgrids
 ) where
 
 import Data.Maybe
-import Text.Read
+import Data.List
 
 -- Types declared.
 
 -- Location on a SudokuGrid
-data Location = Loc Int Int deriving (Eq, Show)
+data Location = Loc {row :: Int, col :: Int} deriving (Eq)
 
 -- Type for Sudoku square value.
 data Square = Empty | Val SqVal deriving (Eq)
@@ -63,21 +67,15 @@ emptyBoard :: SudokuBoard
 emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Empty))]
 
 -- Get the value in a particular square of a Sudoku board.
-getBoardValue :: SudokuBoard -> Location -> Maybe Square
-getBoardValue (SudokuBoard board) (Loc rowIndex colIndex)
-    
-    -- Otherwise return value
-    | otherwise                    = Just value
+getBoardValue :: SudokuBoard -> Location -> Square
+getBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = value
     where
         row   = board !! rowIndex
         value = row !! colIndex
 
 -- Returns a SudokuBoard with the value at the two indices modified.
-setBoardValue :: SudokuBoard -> Location -> Square -> Maybe SudokuBoard
-setBoardValue (SudokuBoard board) (Loc rowIndex colIndex) newSquare
-    
-    -- Return new board if everything seems all right.
-    | otherwise                    = Just $ SudokuBoard newBoard
+setBoardValue :: SudokuBoard -> Location -> Square -> SudokuBoard
+setBoardValue (SudokuBoard board) (Loc rowIndex colIndex) newSquare = SudokuBoard newBoard
     where
         
         -- Create new row.
@@ -85,18 +83,21 @@ setBoardValue (SudokuBoard board) (Loc rowIndex colIndex) newSquare
         newRow    = take colIndex oldRow ++ [newSquare] ++ drop (colIndex + 1) oldRow
 
 	-- Create new board.
-        newBoard  = take rowIndex board ++ [newRow] ++ drop (colIndex + 1) board
+        newBoard  = take rowIndex board ++ [newRow] ++ drop (rowIndex + 1) board
 
 -- Checks if a SudokuBoard is currently valid or not.
 -- Checks all rows, columns, and subgrids with checkList and returns a 
 -- list of matching pairs.
-checkBoard :: SudokuBoard -> [(Square, Square)]
-checkBoard (SudokuBoard board) = allPairs
+checkBoard :: SudokuBoard -> [(Location, Location)]
+checkBoard sudokuBoard = allPairs
     where
-        rowPairs = concat $ map checkList board
-        columns  = [getColumn board index | index <- [0..9]]
-        colPairs = concat $ map checkList board
-        allPairs = colPairs ++ rowPairs
+        
+        -- Get all kinds of paires.
+        rowPairs       = checkRows sudokuBoard
+        colPairs       = checkCols sudokuBoard
+        subgridPairs   = checkSubgrids sudokuBoard
+        -- Don't forget to remove duplicates within subgrids.
+        allPairs       = union (union colPairs subgridPairs) (union rowPairs subgridPairs)
 
 -- Show for SudokuBoard, prints it nicely.
 prettyPrint :: SudokuBoard -> String
@@ -122,8 +123,11 @@ prettyPrint (SudokuBoard board) = niceBoard
 
 -- Show either the number, or "E" for empty.
 instance Show Square where
-    show (Val value) = show value
+    show (Val value) = tail $ show value
     show (Empty)    = "E"
+
+instance Show Location where
+    show (Loc row col) = show (row, col)
 
 -- Turn an int into an index value.
 toIndex :: String -> Maybe Int
@@ -143,18 +147,63 @@ checkPair :: Square -> Square -> Bool
 checkPair (Val squareA) (Val squareB) = (squareA == squareB)
 checkPair _ _ = False
 
--- Check a list of Squares and returns a list of pairs that are equal.
-checkList :: [Square] -> [(Square, Square)]
+-- Takes a list of tuples of Int and Square. The Int is an indexing tag.
+-- Returns a list of pairs of indexing tags where the Square is equal.
+checkList :: [(Location, Square)] -> [(Location, Location)]
 checkList (x:xs)
-    | tail xs == [] = if checkPair x (head xs) then [(x, (head xs))] else []
+    | tail xs == [] = if checkPair (snd x) (snd $ head xs) then [(fst x, (fst $ head xs))] else []
     | otherwise     = answer
     where
-        headPairs   = [(x, y) | y <- xs, checkPair x y]
+        headPairs   = [((fst x), (fst y)) | y <- xs, checkPair (snd x) (snd y)]
         answer      = headPairs ++ checkList xs
-        
--- Retrieves a specified column from a 2D list.
-getColumn :: [[a]] -> Int -> [a]
-getColumn list index = [row !! index| row <- list]
+
+-- Helper function for check functions. Given two lists of lists, returns a list
+-- of lists of pairs.
+zipLists :: [[a]] -> [[b]] -> [[(a, b)]]
+zipLists [] _ = []
+zipLists _ [] = []
+zipLists (a:as) (b:bs) = [zip a b] ++ zipLists as bs
+
+-- Returns a list of all pairs of locations that are invalid (for rows).
+checkRows :: SudokuBoard -> [(Location, Location)]
+checkRows sudokuBoard = matchingLocations
+    where
+        locations         = [ [ Loc r c | c <- [0..8] ] | r <- [0..8] ]
+        squares           = map (map (getBoardValue sudokuBoard)) locations
+        zipped            = zipLists locations squares 
+        matchingLocations = concat $ map checkList zipped
+
+-- Returns a list of all pairs of locations that are invalid (for columns).
+checkCols :: SudokuBoard -> [(Location, Location)]
+checkCols sudokuBoard = matchingLocations
+    where
+        locations         = [ [ Loc r c | r <- [0..8] ] | c <- [0..8] ]
+        squares           = map (map (getBoardValue sudokuBoard)) locations
+        zipped            = zipLists locations squares 
+        matchingLocations = concat $ map checkList zipped
+
+-- Given an Int indicating the index of a subgrid, returns a list of Locations matching that
+-- subgrid.
+-- TODO find a better way to do this.
+subgridHelper :: Int -> [Location]
+subgridHelper 0 = [Loc r c | r <- [0..2], c <- [0..2]]
+subgridHelper 1 = [Loc r c | r <- [0..2], c <- [3..5]]
+subgridHelper 2 = [Loc r c | r <- [0..2], c <- [6..8]]
+subgridHelper 3 = [Loc r c | r <- [3..5], c <- [0..2]]
+subgridHelper 4 = [Loc r c | r <- [3..5], c <- [3..5]]
+subgridHelper 5 = [Loc r c | r <- [3..5], c <- [6..8]]
+subgridHelper 6 = [Loc r c | r <- [6..8], c <- [0..2]]
+subgridHelper 7 = [Loc r c | r <- [6..8], c <- [3..5]]
+subgridHelper 8 = [Loc r c | r <- [6..8], c <- [6..8]]
+
+-- Returns a list of all pairs of locations that are invalid (for subgrids);
+checkSubgrids :: SudokuBoard -> [(Location, Location)]
+checkSubgrids sudokuBoard = matchingLocations
+    where
+        locations         = map subgridHelper [0..8]
+        squares           = map (map (getBoardValue sudokuBoard)) locations
+        zipped            = zipLists locations squares 
+        matchingLocations = concat $ map checkList zipped
 
 -- Given an array and a spacer, uses the spacer to separate
 -- the first three from the middle three rows and the middle
