@@ -10,14 +10,11 @@ module SudokuBoard
 , toLocation
 , toSquare
 , emptyBoard
+, loadBoard
 , prettyPrint
 , getBoardValue
 , setBoardValue
 , checkBoard
--- temp
-, checkCols
-, checkRows
-, checkSubgrids
 ) where
 
 import Data.Maybe
@@ -51,6 +48,7 @@ toSquare "6" = Just $ Val V6
 toSquare "7" = Just $ Val V7
 toSquare "8" = Just $ Val V8
 toSquare "9" = Just $ Val V9
+toSquare "_" = Just Empty
 toSquare _ = Nothing
 
 -- Create Location
@@ -65,6 +63,13 @@ toLocation rowStr colStr
 -- Creates empty Sudoku board.
 emptyBoard :: SudokuBoard
 emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Empty))]
+
+-- Load board from file.
+loadBoard :: [[String]] -> SudokuBoard
+loadBoard board = SudokuBoard values
+    where
+        maybes = map (map toSquare) board
+        values = map (map fromJust) maybes
 
 -- Get the value in a particular square of a Sudoku board.
 getBoardValue :: SudokuBoard -> Location -> Square
