@@ -98,7 +98,11 @@ main = do
     arguments <- getArgs
 
     -- Read from file.
-    --contents <- readFile filename
+    contents <- readFile "gamefiles/easy1.sfile"
+
+    let fileLines   = lines contents
+        fileStrings = map words fileLines
+        board       = loadBoard fileStrings 
     
     -- Game header.
     putStrLn "This is Sudoku-Linux version 0.2\n"
@@ -106,8 +110,6 @@ main = do
     -- Print original board.
     putStrLn "This is the board\n"
 
-    let board   = emptyBoard
-        
     putStrLn $ prettyPrint board
 
     -- Print prompt.
