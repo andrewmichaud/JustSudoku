@@ -14,6 +14,7 @@ module SudokuBoard
 , prettyPrint
 , getBoardValue
 , setBoardValue
+, eraseBoard
 , checkBoard
 ) where
 
@@ -71,6 +72,13 @@ loadBoard board = SudokuBoard values
         maybes = map (map toSquare) board
         values = map (map fromJust) maybes
 
+-- Erase board.
+eraseBoard :: SudokuBoard -> SudokuBoard
+eraseBoard (SudokuBoard board) = SudokuBoard erased
+    where erased = map (map eraseLocation) board
+
+eraseLocation :: Square -> Square
+eraseLocation oldSquare = Empty
 -- Get the value in a particular square of a Sudoku board.
 getBoardValue :: SudokuBoard -> Location -> Square
 getBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = value
@@ -88,6 +96,14 @@ setBoardValue (SudokuBoard board) (Loc rowIndex colIndex) newSquare = SudokuBoar
         newRow    = take colIndex oldRow ++ [newSquare] ++ drop (colIndex + 1) oldRow
 
 	-- Create new board.
+        newBoard  = take rowIndex board ++ [newRow] ++ drop (rowIndex + 1) board
+
+eraseBoardValue :: SudokuBoard -> Location -> SudokuBoard
+eraseBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = SudokuBoard newBoard
+    where
+        oldRow    = board !! rowIndex
+        newRow    = take colIndex oldRow ++ [Empty] ++ drop (colIndex + 1) oldRow
+
         newBoard  = take rowIndex board ++ [newRow] ++ drop (rowIndex + 1) board
 
 -- Checks if a SudokuBoard is currently valid or not.

@@ -19,7 +19,7 @@ import Text.Read
 import SudokuBoard
 
 -- Types of moves the player can make.
-data Move = Set String String String | Check | Quit
+data Move = Set String String String | Check | Erase | Quit
 
 -- Kinds of move errors that can occur.
 data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError Int | 

@@ -87,6 +87,9 @@ move board (Check)
     where
         invalidSquares = checkBoard board
 
+-- Erase board
+move board (Erase) = Right $ eraseBoard board
+
 -- Unimplemented.
 --move board (Quit)
 --    | False == True = Left $ OtherError "???"
