@@ -22,6 +22,8 @@ parseMove "c" = Just Check
 -- Quit.
 parseMove "q" = Just Quit
 
+parseMove "e" = Just Erase
+
 -- No other moves are valid.
 parseMove _ = Nothing
 
@@ -33,5 +35,4 @@ parseSquare intString = toSquare intString
 -- Turn two ints into a Location
 parseLocation :: String -> String -> Maybe Location
 parseLocation rowString colString = toLocation rowString colString
-
 
