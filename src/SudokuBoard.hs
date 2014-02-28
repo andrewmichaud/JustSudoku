@@ -109,7 +109,7 @@ eraseBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = SudokuBoard newBoa
 -- Checks if a SudokuBoard is currently valid or not.
 -- Checks all rows, columns, and subgrids with checkList and returns a 
 -- list of matching pairs.
-checkBoard :: SudokuBoard -> [(Location, Location)]
+checkBoard :: SudokuBoard -> [Location]
 checkBoard sudokuBoard = allPairs
     where
         
@@ -169,14 +169,15 @@ checkPair (Val squareA) (Val squareB) = (squareA == squareB)
 checkPair _ _ = False
 
 -- Takes a list of tuples of Int and Square. The Int is an indexing tag.
--- Returns a list of pairs of indexing tags where the Square is equal.
-checkList :: [(Location, Square)] -> [(Location, Location)]
+-- Returns a list of locations corresponding to matching squares.
+checkList :: [(Location, Square)] -> [Location]
 checkList (x:xs)
-    | tail xs == [] = if checkPair (snd x) (snd $ head xs) then [(fst x, (fst $ head xs))] else []
+    | tail xs == [] = if checkPair (snd x) (snd $ head xs) then [fst x, (fst $ head xs)] else []
     | otherwise     = answer
     where
-        headPairs   = [((fst x), (fst y)) | y <- xs, checkPair (snd x) (snd y)]
-        answer      = headPairs ++ checkList xs
+        matchingY    = [fst y | y <- xs, checkPair (snd x) (snd y)]
+        headMatching = if (length matchingY > 0) then [fst x] ++ matchingY else []
+	answer       = headMatching ++ checkList xs
 
 -- Helper function for check functions. Given two lists of lists, returns a list
 -- of lists of pairs.
@@ -186,7 +187,7 @@ zipLists _ [] = []
 zipLists (a:as) (b:bs) = [zip a b] ++ zipLists as bs
 
 -- Returns a list of all pairs of locations that are invalid (for rows).
-checkRows :: SudokuBoard -> [(Location, Location)]
+checkRows :: SudokuBoard -> [Location]
 checkRows sudokuBoard = matchingLocations
     where
         locations         = [ [ Loc r c | c <- [0..8] ] | r <- [0..8] ]
@@ -195,7 +196,7 @@ checkRows sudokuBoard = matchingLocations
         matchingLocations = concat $ map checkList zipped
 
 -- Returns a list of all pairs of locations that are invalid (for columns).
-checkCols :: SudokuBoard -> [(Location, Location)]
+checkCols :: SudokuBoard -> [Location]
 checkCols sudokuBoard = matchingLocations
     where
         locations         = [ [ Loc r c | r <- [0..8] ] | c <- [0..8] ]
@@ -218,7 +219,7 @@ subgridHelper 7 = [Loc r c | r <- [6..8], c <- [3..5]]
 subgridHelper 8 = [Loc r c | r <- [6..8], c <- [6..8]]
 
 -- Returns a list of all pairs of locations that are invalid (for subgrids);
-checkSubgrids :: SudokuBoard -> [(Location, Location)]
+checkSubgrids :: SudokuBoard -> [Location]
 checkSubgrids sudokuBoard = matchingLocations
     where
         locations         = map subgridHelper [0..8]
