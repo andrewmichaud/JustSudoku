@@ -23,7 +23,7 @@ data Move = Set String String String | Check | Erase | Quit
 
 -- Kinds of move errors that can occur.
 data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError Int | 
-                 OtherError String | InvalidBoardError [(Location, Location)]
+                 OtherError String | InvalidBoardError [Location]
 
 -- For when the error has an error?
 instance Error MoveError where
