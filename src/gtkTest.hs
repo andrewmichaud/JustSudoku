@@ -91,17 +91,25 @@ main = do
     
     -- Init GUI and window handle.
     initGUI
-    window  <- windowNew
-    vbox    <- vBoxNew False 10
-    hbox    <- hBoxNew True 10
-    table   <- tableNew 9 9 True
+    window    <- windowNew
+    mainBox   <- vBoxNew False 10
+    table     <- tableNew 9 9 True
+
+    menuBar   <- menuBarNew
 
     -- Grid fields.
     entryGrid <- getEntryGrid 9
-
-    onEntryActivate ((entryGrid !! 0) !! 1) (validateEntry ((entryGrid !! 0) !! 1))
     
-    entrySetMaxLength ((entryGrid !! 0) !! 1) 1
+    checkItem    <- menuItemNewWithMnemonic "_Check"
+    solveItem    <- menuItemNewWithMnemonic "_Solve"
+    mainMenuItem <- menuItemNewWithMnemonic "_Main Menu"
+
+    -- Add items to menu
+    menuShellAppend menuBar mainMenuItem
+    menuShellAppend menuBar checkItem
+    menuShellAppend menuBar solveItem
+
+    --entrySetMaxLength ((entryGrid !! 0) !! 1) 1
    
     -- Apply some functions to the entries.
     addValidateFunction entryGrid
@@ -113,12 +121,12 @@ main = do
     set window [windowDefaultWidth := 200
                , windowDefaultHeight := 200
                , windowTitle := "Sudoku Linux"
-               , containerChild := vbox
+               , containerChild := mainBox
                , containerBorderWidth := 10]
     
     -- Pack some other stuff.           
-    boxPackStart vbox hbox PackNatural 0
-    boxPackStart hbox table PackGrow 0
+    boxPackStart mainBox menuBar PackNatural 0
+    boxPackStart mainBox table PackGrow 0
     
     onDestroy window mainQuit
     widgetShowAll window
