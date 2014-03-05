@@ -25,8 +25,7 @@ getEntryGrid count = do
     return $ entryRow : grid
 
 -- Pack an entry given the entry, a table to pack in, and coordinates.
-packEntry :: (WidgetClass widget, TableClass self) => 
-             self -> widget -> (Int, Int) -> (Int, Int) -> IO ()
+packEntry :: (TableClass self) => self -> Entry -> (Int, Int) -> (Int, Int) -> IO ()
 packEntry table entry colCoords rowCoords = do
     tableAttachDefaults table entry colT colB rowL rowR
     where
@@ -36,14 +35,12 @@ packEntry table entry colCoords rowCoords = do
         colB = snd colCoords
 
 -- Pack a 1D list of widgets into a table with the provided indices.
-packEntryList :: (WidgetClass widget, TableClass self) => 
-                 self -> [widget] -> [(Int, Int)] -> [(Int, Int)] -> IO [()]
+packEntryList :: (TableClass self) => self -> [Entry] -> [(Int, Int)] -> [(Int, Int)] -> IO [()]
 packEntryList table entryArray colCoords rowCoords = do
     sequence $ zipWith3 (packEntry table) entryArray colCoords rowCoords
 
 -- Pack a 2D list of entries with the provided indices.
-packAllEntries :: (WidgetClass widget, TableClass self) => 
-                  self -> [[widget]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> IO [[()]]
+packAllEntries :: (TableClass self) => self -> [[Entry]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> IO [[()]]
 packAllEntries table entryArray colCoords rowCoords = do
     sequence $ zipWith3 (packEntryList table) entryArray colCoords rowCoords
 
@@ -76,11 +73,19 @@ validateEntry e = do
             else do
                 entrySetText e $ show 1
 
+-- Generate coordinates 
 colCoords :: [[(Int, Int)]]
 colCoords = replicate 9 [(x, x + 1) | x <- [0..8]] :: [[(Int, Int)]]
 
 rowCoords :: [[(Int, Int)]]
 rowCoords =  map (replicate 9) [(x, x + 1) | x <- [0..8]] :: [[(Int, Int)]]
+
+-- Add validate function to all entries.
+addValidateFunction :: [[Entry]] -> IO [[ConnectId Entry]]
+addValidateFunction entryArray = do
+    sequence $ map (\row -> validateOne row) entryArray
+    where
+        validateOne row = sequence $ map (\entry -> onEntryActivate entry (validateEntry entry)) row
 
 main = do
     
@@ -96,19 +101,22 @@ main = do
 
     onEntryActivate ((entryGrid !! 0) !! 1) (validateEntry ((entryGrid !! 0) !! 1))
     
-    -- Pack
     entrySetMaxLength ((entryGrid !! 0) !! 1) 1
-    --tableAttachDefaults table ((entryGrid !! 0) !! 1) 1 2 0 1
-    
- 
-    packAllEntries table entryGrid colCoords rowCoords
-        --output = deepseq result result
+   
+    -- Apply some functions to the entries.
+    addValidateFunction entryGrid
 
+    -- Pack entries.
+    packAllEntries table entryGrid colCoords rowCoords
+
+    -- Set window parameters.
     set window [windowDefaultWidth := 200
                , windowDefaultHeight := 200
                , windowTitle := "Sudoku Linux"
                , containerChild := vbox
                , containerBorderWidth := 10]
+    
+    -- Pack some other stuff.           
     boxPackStart vbox hbox PackNatural 0
     boxPackStart hbox table PackGrow 0
     
