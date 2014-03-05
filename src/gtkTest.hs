@@ -37,16 +37,15 @@ packEntry table entry colCoords rowCoords = do
 
 -- Pack a 1D list of widgets into a table with the provided indices.
 packEntryList :: (WidgetClass widget, TableClass self) => 
-                 self -> [widget] -> [(Int, Int)] -> [(Int, Int)] -> [IO ()]
+                 self -> [widget] -> [(Int, Int)] -> [(Int, Int)] -> IO [()]
 packEntryList table entryArray colCoords rowCoords = do
-    let result = zipWith3 (packEntry table) entryArray colCoords rowCoords
-    seq result result
+    sequence $ zipWith3 (packEntry table) entryArray colCoords rowCoords
 
+-- Pack a 2D list of entries with the provided indices.
 packAllEntries :: (WidgetClass widget, TableClass self) => 
-                  self -> [[widget]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> [[IO ()]]
+                  self -> [[widget]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> IO [[()]]
 packAllEntries table entryArray colCoords rowCoords = do
-    let result = zipWith3 (packEntryList table) entryArray colCoords rowCoords
-    seq result result
+    sequence $ zipWith3 (packEntryList table) entryArray colCoords rowCoords
 
 -- Convert from int to string, discarding out of range.
 checkValue :: String -> Maybe Int
@@ -102,7 +101,8 @@ main = do
     --tableAttachDefaults table ((entryGrid !! 0) !! 1) 1 2 0 1
     
  
-    let _ = seq colCoords $ packAllEntries table entryGrid colCoords rowCoords
+    packAllEntries table entryGrid colCoords rowCoords
+        --output = deepseq result result
 
     set window [windowDefaultWidth := 200
                , windowDefaultHeight := 200
