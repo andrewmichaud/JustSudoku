@@ -4,6 +4,7 @@ import Graphics.UI.Gtk
 import Control.Monad.Trans(liftIO)
 import Control.Monad(replicateM)
 import Data.Maybe
+import Control.DeepSeq
 
 -- Get count entries
 getEntryRow :: Int -> IO [Entry]
@@ -24,7 +25,8 @@ getEntryGrid count = do
     return $ entryRow : grid
 
 -- Pack an entry given the entry, a table to pack in, and coordinates.
-packEntry :: (WidgetClass widget, TableClass self) => self -> widget -> (Int, Int) -> (Int, Int) -> IO ()
+packEntry :: (WidgetClass widget, TableClass self) => 
+             self -> widget -> (Int, Int) -> (Int, Int) -> IO ()
 packEntry table entry colCoords rowCoords = do
     tableAttachDefaults table entry colT colB rowL rowR
     where
@@ -34,13 +36,17 @@ packEntry table entry colCoords rowCoords = do
         colB = snd colCoords
 
 -- Pack a 1D list of widgets into a table with the provided indices.
-packEntryList :: (WidgetClass widget, TableClass self) => self -> [widget] -> [(Int, Int)] -> [(Int, Int)] -> [IO ()]
+packEntryList :: (WidgetClass widget, TableClass self) => 
+                 self -> [widget] -> [(Int, Int)] -> [(Int, Int)] -> [IO ()]
 packEntryList table entryArray colCoords rowCoords = do
-    zipWith3 (packEntry table) entryArray colCoords rowCoords
+    let result = zipWith3 (packEntry table) entryArray colCoords rowCoords
+    seq result result
 
-packAllEntries :: (WidgetClass widget, TableClass self) => self -> [[widget]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> [[IO ()]]
+packAllEntries :: (WidgetClass widget, TableClass self) => 
+                  self -> [[widget]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> [[IO ()]]
 packAllEntries table entryArray colCoords rowCoords = do
-    zipWith3 (packEntryList table) entryArray colCoords rowCoords
+    let result = zipWith3 (packEntryList table) entryArray colCoords rowCoords
+    seq result result
 
 -- Convert from int to string, discarding out of range.
 checkValue :: String -> Maybe Int
@@ -90,11 +96,13 @@ main = do
     entryGrid <- getEntryGrid 9
 
     onEntryActivate ((entryGrid !! 0) !! 1) (validateEntry ((entryGrid !! 0) !! 1))
+    
     -- Pack
     entrySetMaxLength ((entryGrid !! 0) !! 1) 1
-    tableAttachDefaults table ((entryGrid !! 0) !! 1) 1 2 0 1
-
-    packAllEntries table entryGrid colCoords rowCoords
+    --tableAttachDefaults table ((entryGrid !! 0) !! 1) 1 2 0 1
+    
+ 
+    let _ = seq colCoords $ packAllEntries table entryGrid colCoords rowCoords
 
     set window [windowDefaultWidth := 200
                , windowDefaultHeight := 200
