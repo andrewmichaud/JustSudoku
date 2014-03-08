@@ -79,6 +79,18 @@ move board (Set row col val)
         valInt   = readMaybe val
         newBoard = setBoardValue board (fromJust location) (fromJust value)
 
+-- Erase requested value. If an error occurs, the value will not be erased.
+move board (Erase row col)
+    | rowInt   == Nothing = Left $ NaNError row
+    | colInt   == Nothing = Left $ NaNError col
+    | location == Nothing = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
+    | otherwise           = Right $ newBoard
+    where
+        location = parseLocation row col
+        rowInt   = readMaybe row
+        colInt   = readMaybe col
+        newBoard = eraseBoardValue board (fromJust location)
+
 -- Check if any squares are invalid. "Error" and show invalid squares if any exist. 
 -- In any case, the original board will remain.
 move board (Check)
@@ -87,8 +99,8 @@ move board (Check)
     where
         invalidSquares = checkBoard board
 
--- Erase board
-move board (Erase) = Right $ eraseBoard board
+-- Reset board
+move board (Reset) = Right $ resetBoard board
 
 -- Unimplemented.
 --move board (Quit)
@@ -103,10 +115,8 @@ main = do
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"
 
-    let fileLines   = lines contents
-        fileStrings = map words fileLines
-        board       = loadBoard fileStrings 
-    
+    let board = attemptLoad contents
+
     -- Game header.
     putStrLn "This is Sudoku-Linux version 0.2\n"
 

@@ -19,7 +19,7 @@ import Text.Read
 import SudokuBoard
 
 -- Types of moves the player can make.
-data Move = Set String String String | Check | Erase | Quit
+data Move = Set String String String | Check | Erase String String | Reset | Quit
 
 -- Kinds of move errors that can occur.
 data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError Int | 
@@ -27,7 +27,7 @@ data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError 
 
 -- For when the error has an error?
 instance Error MoveError where
-    noMsg  = OtherError "KERNEL PANIC"
+    noMsg  = OtherError "Something has gone horribly wrong."
     strMsg = OtherError
 instance Show MoveError where
     show (NaNError value)            = "Value " ++ value ++ " is not a number."

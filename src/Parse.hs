@@ -22,7 +22,15 @@ parseMove "c" = Just Check
 -- Quit.
 parseMove "q" = Just Quit
 
-parseMove "e" = Just Erase
+-- Reset board.
+parseMove "r" = Just Reset
+
+-- Erase value in board.
+parseMove ('e':r:c)
+    | loc == Nothing = Nothing
+    | otherwise      = Just $ Erase [r] c
+    where
+        loc = parseLocation [r] c
 
 -- No other moves are valid.
 parseMove _ = Nothing

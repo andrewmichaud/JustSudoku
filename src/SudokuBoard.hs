@@ -10,11 +10,13 @@ module SudokuBoard
 , toLocation
 , toSquare
 , emptyBoard
-, loadBoard
+, attemptLoad
 , prettyPrint
 , getBoardValue
 , setBoardValue
-, eraseBoard
+, eraseBoardValue
+--, isFilled
+, resetBoard
 , checkBoard
 ) where
 
@@ -27,7 +29,9 @@ import Data.List
 data Location = Loc {row :: Int, col :: Int} deriving (Eq)
 
 -- Type for Sudoku square value.
-data Square = Empty | Val SqVal deriving (Eq)
+data Square = Empty | Val { value :: SqVal
+                          , isOrig  :: Bool
+                          } deriving (Eq)
 
 -- Value of a Square, can be 1-9
 data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 deriving (Eq, Ord, Enum, Show)
@@ -40,15 +44,15 @@ data SudokuBoard = SudokuBoard [[Square]] deriving (Eq, Show)
 -- Convert Int to Square
 toSquare :: String -> Maybe Square
 toSquare "0" = Just Empty
-toSquare "1" = Just $ Val V1
-toSquare "2" = Just $ Val V2
-toSquare "3" = Just $ Val V3
-toSquare "4" = Just $ Val V4
-toSquare "5" = Just $ Val V5
-toSquare "6" = Just $ Val V6
-toSquare "7" = Just $ Val V7
-toSquare "8" = Just $ Val V8
-toSquare "9" = Just $ Val V9
+toSquare "1" = Just $ Val {value = V1, isOrig = False}
+toSquare "2" = Just $ Val {value = V2, isOrig = False}
+toSquare "3" = Just $ Val {value = V3, isOrig = False}
+toSquare "4" = Just $ Val {value = V4, isOrig = False}
+toSquare "5" = Just $ Val {value = V5, isOrig = False}
+toSquare "6" = Just $ Val {value = V6, isOrig = False}
+toSquare "7" = Just $ Val {value = V7, isOrig = False}
+toSquare "8" = Just $ Val {value = V8, isOrig = False}
+toSquare "9" = Just $ Val {value = V9, isOrig = False}
 toSquare "_" = Just Empty
 toSquare _ = Nothing
 
@@ -65,20 +69,27 @@ toLocation rowStr colStr
 emptyBoard :: SudokuBoard
 emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Empty))]
 
--- Load board from file.
-loadBoard :: [[String]] -> SudokuBoard
-loadBoard board = SudokuBoard values
+-- Attempts to load a board from a file.
+-- If it fails, an empty board is returned.
+attemptLoad :: String -> SudokuBoard
+attemptLoad fileContents = board
     where
-        maybes = map (map toSquare) board
-        values = map (map fromJust) maybes
+        fileLines   = lines fileContents
+        fileStrings = map words fileLines
+        board       = createBoard fileStrings 
 
--- Erase board.
-eraseBoard :: SudokuBoard -> SudokuBoard
-eraseBoard (SudokuBoard board) = SudokuBoard erased
+-- Reset board.
+resetBoard :: SudokuBoard -> SudokuBoard
+resetBoard (SudokuBoard board) = SudokuBoard erased
     where erased = map (map eraseLocation) board
 
+-- Erase square if it isn't an original value.
 eraseLocation :: Square -> Square
-eraseLocation oldSquare = Empty
+eraseLocation oldSquare
+    | oldSquare == Empty       = oldSquare
+    | isOrig oldSquare         = oldSquare
+    | otherwise                = Empty
+
 -- Get the value in a particular square of a Sudoku board.
 getBoardValue :: SudokuBoard -> Location -> Square
 getBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = value
@@ -92,17 +103,26 @@ setBoardValue (SudokuBoard board) (Loc rowIndex colIndex) newSquare = SudokuBoar
     where
         
         -- Create new row.
-        oldRow    = board !! rowIndex
-        newRow    = take colIndex oldRow ++ [newSquare] ++ drop (colIndex + 1) oldRow
+        oldRow   = board !! rowIndex
+        oldValue = oldRow !! colIndex
+        newRow   
+            | oldValue == Empty = take colIndex oldRow ++ [newSquare] ++ drop (colIndex + 1) oldRow 
+            | isOrig oldValue   = oldRow
+            | otherwise         = take colIndex oldRow ++ [newSquare] ++ drop (colIndex + 1) oldRow
 
 	-- Create new board.
         newBoard  = take rowIndex board ++ [newRow] ++ drop (rowIndex + 1) board
-
+        
+-- Erase square of a SudokuBoard if it isn't original.
 eraseBoardValue :: SudokuBoard -> Location -> SudokuBoard
 eraseBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = SudokuBoard newBoard
     where
-        oldRow    = board !! rowIndex
-        newRow    = take colIndex oldRow ++ [Empty] ++ drop (colIndex + 1) oldRow
+        oldRow   = board !! rowIndex 
+        oldValue = oldRow !! colIndex
+        newRow
+            | oldValue == Empty = oldRow
+            | isOrig oldValue   = oldRow
+            | otherwise         = take colIndex oldRow ++ [Empty] ++ drop (colIndex + 1) oldRow
 
         newBoard  = take rowIndex board ++ [newRow] ++ drop (rowIndex + 1) board
 
@@ -117,6 +137,7 @@ checkBoard sudokuBoard = allPairs
         rowPairs       = checkRows sudokuBoard
         colPairs       = checkCols sudokuBoard
         subgridPairs   = checkSubgrids sudokuBoard
+
         -- Don't forget to remove duplicates within subgrids.
         allPairs       = union (union colPairs subgridPairs) (union rowPairs subgridPairs)
 
@@ -144,8 +165,8 @@ prettyPrint (SudokuBoard board) = niceBoard
 
 -- Show either the number, or "E" for empty.
 instance Show Square where
-    show (Val value) = tail $ show value
-    show (Empty)    = "E"
+    show (Empty)          = "E"
+    show (Val value orig) = tail $ show value
 
 instance Show Location where
     show (Loc row col) = show (row, col)
@@ -163,9 +184,30 @@ toIndex "7" = Just 7
 toIndex "8" = Just 8
 toIndex _   = Nothing
 
+-- Create board from array of array of string.
+createBoard :: [[String]] -> SudokuBoard
+createBoard board = SudokuBoard values
+    where
+        maybes = map (map toOrigSquare) board
+        values = map (map fromJust) maybes
+
+-- Identical to toSquare, but marks squares as "original" - not to be modified.
+toOrigSquare :: String -> Maybe Square
+toOrigSquare "1" = Just $ Val {value = V1, isOrig = True}
+toOrigSquare "2" = Just $ Val {value = V2, isOrig = True}
+toOrigSquare "3" = Just $ Val {value = V3, isOrig = True}
+toOrigSquare "4" = Just $ Val {value = V4, isOrig = True}
+toOrigSquare "5" = Just $ Val {value = V5, isOrig = True}
+toOrigSquare "6" = Just $ Val {value = V6, isOrig = True}
+toOrigSquare "7" = Just $ Val {value = V7, isOrig = True}
+toOrigSquare "8" = Just $ Val {value = V8, isOrig = True}
+toOrigSquare "9" = Just $ Val {value = V9, isOrig = True}
+toOrigSquare "_" = Just Empty
+toOrigSquare _ = Nothing
+
 -- Check if a pair of Squares are equal.
 checkPair :: Square -> Square -> Bool
-checkPair (Val squareA) (Val squareB) = (squareA == squareB)
+checkPair (Val squareA origA) (Val squareB origB) = (squareA == squareB)
 checkPair _ _ = False
 
 -- Takes a list of tuples of Int and Square. The Int is an indexing tag.
@@ -177,7 +219,7 @@ checkList (x:xs)
     where
         matchingY    = [fst y | y <- xs, checkPair (snd x) (snd y)]
         headMatching = if (length matchingY > 0) then [fst x] ++ matchingY else []
-	answer       = headMatching ++ checkList xs
+        answer       = headMatching ++ checkList xs
 
 -- Helper function for check functions. Given two lists of lists, returns a list
 -- of lists of pairs.
