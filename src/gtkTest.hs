@@ -27,7 +27,7 @@ getEntryGrid count = do
 -- Pack an entry given the entry, a table to pack in, and coordinates.
 packEntry :: (TableClass self) => self -> Entry -> (Int, Int) -> (Int, Int) -> IO ()
 packEntry table entry colCoords rowCoords = do
-    tableAttachDefaults table entry colT colB rowL rowR
+    tableAttach table entry colT colB rowL rowR [Shrink] [Shrink] 1 1
     where
         rowL = fst rowCoords
         rowR = snd rowCoords
@@ -111,12 +111,28 @@ addValidateFunction entryArray = do
     where
         validateOne row = sequence $ map (\entry -> onEntryActivate entry (validateEntry entry)) row
 
+-- Set size request of all entries.
+setAllEntriesWidth :: Int -> [[Entry]] -> IO [[()]]
+setAllEntriesWidth size entryArray = do
+    sequence $ map (\row -> setOne row) entryArray
+    where
+        setOne row = sequence $ map (\entry -> entrySetWidthChars entry size) row
+
+-- Set max chars for all entries.
+setAllEntriesMaxChars :: Int -> [[Entry]] -> IO [[()]]
+setAllEntriesMaxChars size entryArray = do
+    sequence $ map (\row -> setOne row) entryArray
+    where
+        setOne row = sequence $ map (\entry -> entrySetMaxLength entry size) row
+
+main :: IO ()
 main = do
     
     -- Init GUI and window handle.
     initGUI
     window    <- windowNew
     mainBox   <- vBoxNew False 10
+    tableBox  <- hBoxNew False 10
     table     <- tableNew 10 10 True
 
     menuBar   <- menuBarNew
@@ -133,10 +149,10 @@ main = do
     menuShellAppend menuBar checkItem
     menuShellAppend menuBar solveItem
 
-    --entrySetMaxLength ((entryGrid !! 0) !! 1) 1
-   
     -- Apply some functions to the entries.
     addValidateFunction entryGrid
+    setAllEntriesWidth 4 entryGrid
+    setAllEntriesMaxChars 1 entryGrid
 
     -- Pack entries.
     packAllEntries table entryGrid colCoords rowCoords
@@ -150,7 +166,8 @@ main = do
     
     -- Pack some other stuff.           
     boxPackStart mainBox menuBar PackNatural 0
-    boxPackStart mainBox table PackGrow 0
+    boxPackStart mainBox tableBox PackNatural 0
+    boxPackStart tableBox table PackRepel 0
     
     onDestroy window mainQuit
     widgetShowAll window
