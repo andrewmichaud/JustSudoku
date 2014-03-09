@@ -10,13 +10,7 @@ module Move
 -- For custom errors.
 import Control.Monad.Error
 
--- For fromJust and other things.
-import Data.Maybe
-
--- For Read.Maybe
-import Text.Read
-
-import SudokuBoard
+import Board
 
 -- Types of moves the player can make.
 data Move = Set String String String | Check | Erase String String | Reset | Quit
@@ -29,6 +23,7 @@ data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError 
 instance Error MoveError where
     noMsg  = OtherError "Something has gone horribly wrong."
     strMsg = OtherError
+
 instance Show MoveError where
     show (NaNError value)            = "Value " ++ value ++ " is not a number."
     show (OutOfBoundsError row col)  = "Square (" ++ show row ++ ", " ++ show col 

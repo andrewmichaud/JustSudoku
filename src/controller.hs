@@ -4,47 +4,41 @@
 
 module Main where
 
--- For argument processing.
-import System.Environment
-
--- For file and other IO.
-import System.IO
-
 -- For Read.Maybe
 import Text.Read
-
 
 -- For maybes.
 import Data.Maybe
 
-import SudokuBoard
+-- Sudoku-related things
+import Board
 import Move
 import Parse
 
 -- Styled (with permission) after a friend's code.
 repl :: (SudokuBoard -> Move -> Either MoveError SudokuBoard) -> (String -> Maybe Move) -> SudokuBoard -> IO ()
-repl f parse init = do
+repl f parse initial = do
     
     -- Grab input line.
     line <- getLine
 
     -- Parse the line as a move.
-    let possibleMove = parseMove line
+    --let possibleMove = parseMove line
 
     -- This handles the cases of failing to parse and successfully (maybe) parsing.
-    maybe fail succeed (parse line) where
+    maybe failAction succeedAction (parse line) where
 
         -- If we fail to parse, say so and recurse with init.
-        fail = do
+        failAction = do
             putStrLn "Unable to parse move. Try again.\n"
-            repl f parse init
+            repl f parse initial
 
         -- If nothing immediately goes wrong, we take the a and attempt to apply it
         -- to receive a new state.
-        succeed a = do
+        succeedAction a = do
 
             -- Obtain and print newstate.
-            let newstate  = f init a
+            let newstate  = f initial a
             putStrLn $ either show prettyPrint newstate
 
             -- Print prompt.
@@ -57,7 +51,7 @@ repl f parse init = do
             -- and throws it away, and returns init.
             -- If newstate is not an error, we return it. id just takes newstate and returns it.
             -- The end result is that we have a new value to recurse with repl.
-            repl f parse $ either (const init) id newstate
+            repl f parse $ either (const initial) id newstate
 
 -- Try to processs a move.
 move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
@@ -103,14 +97,15 @@ move board (Check)
 move board (Reset) = Right $ resetBoard board
 
 -- Unimplemented.
---move board (Quit)
---    | False == True = Left $ OtherError "???"
---    | otherwise     = Right $ board
+move board (Quit)
+    | False == True = Left $ OtherError "???"
+    | otherwise     = Right $ board
 
+main :: IO ()
 main = do
 
     -- Command line arguments.
-    arguments <- getArgs
+    --arguments <- getArgs
 
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"

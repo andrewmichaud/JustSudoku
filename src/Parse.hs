@@ -1,7 +1,11 @@
+-- Andrew Michaud
+-- 02/15/14
+-- Contains methods for parsing moves for a Sudoku game.
+
 module Parse where
 
 import Move
-import SudokuBoard
+import Board
 
 -- Parse a move
 -- Also styled after a friend's code.
