@@ -7,6 +7,10 @@ module Main where
 -- For Read.Maybe
 import Text.Read
 
+-- Command-line stuff
+import System.Environment
+import System.Exit
+
 -- For maybes.
 import Data.Maybe
 
@@ -41,6 +45,9 @@ repl f parse initial = do
             -- Obtain and print newstate.
             let newstate  = f initial a
             putStrLn $ either show prettyPrint newstate
+            
+            -- Check if we were told to quit.
+            maybeDie newstate
 
             -- Print prompt.
             putStrLn "What would you like to do?\n"
@@ -53,6 +60,14 @@ repl f parse initial = do
             -- If newstate is not an error, we return it. id just takes newstate and returns it.
             -- The end result is that we have a new value to recurse with repl.
             repl f parse $ either (const initial) id newstate
+
+maybeDie :: Either MoveError SudokuBoard -> IO ()
+maybeDie val = do
+    either (const die) (const continue ) val
+     
+continue :: IO ()
+continue = do
+    return ()
 
 -- Try to processs a move.
 move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
@@ -98,16 +113,23 @@ move board (Check)
 move board (Reset) = Right $ resetBoard board
 
 -- Unimplemented.
-move board (Quit)
-    | False == True = Left $ OtherError "???"
-    | otherwise     = Right $ board
+move board (Quit) = Left $ QuitError
+
+-- Command-line stuff
+exit :: IO ()
+exit = exitWith ExitSuccess
+
+die :: IO ()
+die = exitWith $ ExitFailure 1
 
 main :: IO ()
 main = do
 
     -- Command line arguments.
-    --arguments <- getArgs
+    arguments <- getArgs
+    print arguments
 
+    -- Initialize and retrieve GUI.
     window <- initSudokuView
     
     -- Read from file.
@@ -116,8 +138,9 @@ main = do
     let board = attemptLoad contents
     
     runSudokuWindow window
+
     -- Game header.
-    putStrLn "This is Sudoku-Linux version 0.2\n"
+    putStrLn "This is Sudoku-Linux version 0.4\n"
 
     -- Print original board.
     putStrLn "This is the board\n"
@@ -129,4 +152,6 @@ main = do
     
     -- Enter control loop.
     repl move parseMove board
+
+    exit
 

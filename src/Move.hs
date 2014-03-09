@@ -17,7 +17,7 @@ data Move = Set String String String | Check | Erase String String | Reset | Qui
 
 -- Kinds of move errors that can occur.
 data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError Int | 
-                 OtherError String | InvalidBoardError [Location]
+                 OtherError String | InvalidBoardError [Location] | QuitError
 
 -- For when the error has an error?
 instance Error MoveError where
@@ -31,4 +31,5 @@ instance Show MoveError where
     show (InvalidValueError value)   = "Value " ++ show value ++ " is invalid."
     show (InvalidBoardError squares) = "Board is invalid. Invalid squares: " ++ show squares
     show (OtherError string)         = "General error: " ++ string
+    show QuitError                   = "Asked or required to quit!"
 
