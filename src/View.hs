@@ -1,3 +1,8 @@
+
+-- Andrew Michaud
+-- 03/09/14
+-- View for Sudoku project.
+
 module View where
 
 import Graphics.UI.Gtk
