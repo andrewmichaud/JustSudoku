@@ -2,8 +2,8 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                sudoku-linux
-version:             0.3.0.0
-synopsis:            GTK+ Sudoku app written in Haskell
+version:             0.4.0.0
+synopsis:            GTK+ Linux Sudoku game
 -- description:         
 homepage:            https://github.com/amichaud/sudoku-linux
 license:             Apache-2.0
@@ -16,11 +16,13 @@ build-type:          Simple
 cabal-version:       >=1.8
 
 library
-  exposed-modules:     SudokuBoard
-  build-depends:       base ==4.6.*, mtl ==2.1.*
-  hs-source-dirs:      src 
+    exposed-modules:     Board, Move, Parse
+    build-depends:       base ==4.6.*, mtl ==2.1.*
+    hs-source-dirs:      src
+
 executable sudoku-linux
-  main-is: controller.hs       
-  -- other-modules:       
-  build-depends:       base ==4.6.*, mtl ==2.1.*
-  hs-source-dirs:      src
+    main-is: controller.hs       
+    -- other-modules:       
+    ghc-options:         -Wall -O2
+    build-depends:       base ==4.6.*, mtl ==2.1.*
+    hs-source-dirs:      src 

@@ -57,11 +57,26 @@ checkValue "8" = Just 8
 checkValue "9" = Just 9
 checkValue _   = Nothing
 
+-- Adds an int to a tuple of ints.
+addToTuple :: Int -> (Int, Int) -> (Int, Int)
+addToTuple num oldTuple = ((fst oldTuple) + num, (snd oldTuple) + num)
+
+-- Add int to tuple of int if two conditions are true.
+addToTupleIf :: Int -> (Int -> Bool) -> (Int ->Bool) -> (Int, Int) -> (Int, Int)
+addToTupleIf new fstCond sndCond (f, s) = result
+    where condition = fstCond f && sndCond s
+          result    = if condition then (f + new, s + new) else (f, s)
+
+-- Special case for adding one to tuple.
+incrementTupleIf :: (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
+incrementTupleIf fstCond sndCond oldTuple = addToTupleIf 1 fstCond sndCond oldTuple
+
 -- Checks whether an entry is between 1 and 9 inclusive and
 -- discards it otherwise.
 validateEntry :: Entry -> IO ()
 validateEntry e = do
     txt <- entryGetText e
+
     if length txt == 0
         then do
         entrySetText e ""
@@ -73,12 +88,21 @@ validateEntry e = do
             else do
                 entrySetText e $ show 1
 
--- Generate coordinates 
+-- Generate column coordinates for a 9x9 Sudoku grid. 
 colCoords :: [[(Int, Int)]]
-colCoords = replicate 9 [(x, x + 1) | x <- [0..8]] :: [[(Int, Int)]]
+colCoords = final
+    where oneRow  = [(x, x + 1) | x <- [0..8]] :: [(Int, Int)]
+          filter1 = map (incrementTupleIf (>2) (>2)) oneRow
+          filter2 = map (incrementTupleIf (>6) (>6)) filter1
+          final   = replicate 9 filter2 :: [[(Int, Int)]]
 
+-- Generate row coordinates for a 9x9 Sudoku grid.
 rowCoords :: [[(Int, Int)]]
-rowCoords =  map (replicate 9) [(x, x + 1) | x <- [0..8]] :: [[(Int, Int)]]
+rowCoords = final
+    where oneRow  = [(x, x + 1) | x <- [0..8]] :: [(Int, Int)]
+          filter1 = map (incrementTupleIf (>2) (>2)) oneRow
+          filter2 = map (incrementTupleIf (>6) (>6)) filter1
+          final   = map (replicate 9) filter2 :: [[(Int, Int)]] 
 
 -- Add validate function to all entries.
 addValidateFunction :: [[Entry]] -> IO [[ConnectId Entry]]
@@ -93,7 +117,7 @@ main = do
     initGUI
     window    <- windowNew
     mainBox   <- vBoxNew False 10
-    table     <- tableNew 9 9 True
+    table     <- tableNew 10 10 True
 
     menuBar   <- menuBarNew
 

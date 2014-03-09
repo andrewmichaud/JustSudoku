@@ -1,8 +1,8 @@
 -- Andrew Michaud
--- 02/05/15
+-- 02/05/14
 -- Data and other definitions needed for Sudoku.
 
-module SudokuBoard 
+module Board 
 ( SqVal
 , Square
 , SudokuBoard
@@ -26,7 +26,7 @@ import Data.List
 -- Types declared.
 
 -- Location on a SudokuGrid
-data Location = Loc {row :: Int, col :: Int} deriving (Eq)
+data Location = Loc Int Int deriving (Eq)
 
 -- Type for Sudoku square value.
 data Square = Empty | Val { value :: SqVal
@@ -92,10 +92,10 @@ eraseLocation oldSquare
 
 -- Get the value in a particular square of a Sudoku board.
 getBoardValue :: SudokuBoard -> Location -> Square
-getBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = value
+getBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = v
     where
-        row   = board !! rowIndex
-        value = row !! colIndex
+        row = board !! rowIndex
+        v   = row !! colIndex
 
 -- Returns a SudokuBoard with the value at the two indices modified.
 setBoardValue :: SudokuBoard -> Location -> Square -> SudokuBoard
@@ -166,7 +166,7 @@ prettyPrint (SudokuBoard board) = niceBoard
 -- Show either the number, or "E" for empty.
 instance Show Square where
     show (Empty)          = "E"
-    show (Val value orig) = tail $ show value
+    show (Val v _) = tail $ show v
 
 instance Show Location where
     show (Loc row col) = show (row, col)
@@ -207,12 +207,13 @@ toOrigSquare _ = Nothing
 
 -- Check if a pair of Squares are equal.
 checkPair :: Square -> Square -> Bool
-checkPair (Val squareA origA) (Val squareB origB) = (squareA == squareB)
+checkPair (Val squareA _) (Val squareB _) = (squareA == squareB)
 checkPair _ _ = False
 
 -- Takes a list of tuples of Int and Square. The Int is an indexing tag.
 -- Returns a list of locations corresponding to matching squares.
 checkList :: [(Location, Square)] -> [Location]
+checkList [] = []
 checkList (x:xs)
     | tail xs == [] = if checkPair (snd x) (snd $ head xs) then [fst x, (fst $ head xs)] else []
     | otherwise     = answer
@@ -259,6 +260,8 @@ subgridHelper 5 = [Loc r c | r <- [3..5], c <- [6..8]]
 subgridHelper 6 = [Loc r c | r <- [6..8], c <- [0..2]]
 subgridHelper 7 = [Loc r c | r <- [6..8], c <- [3..5]]
 subgridHelper 8 = [Loc r c | r <- [6..8], c <- [6..8]]
+-- Shouldn't ever get here.
+subgridHelper _ = []
 
 -- Returns a list of all pairs of locations that are invalid (for subgrids);
 checkSubgrids :: SudokuBoard -> [Location]
