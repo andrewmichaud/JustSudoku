@@ -75,18 +75,13 @@ incrementTupleIf fstCond sndCond oldTuple = addToTupleIf 1 fstCond sndCond oldTu
 -- discards it otherwise.
 validateEntry :: Entry -> IO ()
 validateEntry e = do
-    txt <- entryGetText e
-
-    if length txt == 0
-        then do
-        entrySetText e ""
-        else if isJust $ checkValue txt
-            then do 
-                let validated = checkValue txt
-                    newtxt    = show $ fromJust validated
-                entrySetText e newtxt
-            else do
-                entrySetText e $ show 1
+    text <- entryGetText e
+    entrySetText e $ newval text
+    where newval s
+            | length s == 0         = ""
+            | s == " "              = ""
+            | isJust $ checkValue s = show $ fromJust $ checkValue s
+            | otherwise     = show 1
 
 -- Generate column coordinates for a 9x9 Sudoku grid. 
 colCoords :: [[(Int, Int)]]
@@ -109,7 +104,7 @@ addValidateFunction :: [[Entry]] -> IO [[ConnectId Entry]]
 addValidateFunction entryArray = do
     sequence $ map (\row -> validateOne row) entryArray
     where
-        validateOne row = sequence $ map (\entry -> onEntryActivate entry (validateEntry entry)) row
+        validateOne row = sequence $ map (\entry -> onEditableChanged entry (validateEntry entry)) row
 
 -- Set size request of all entries.
 setAllEntriesWidth :: Int -> [[Entry]] -> IO [[()]]
