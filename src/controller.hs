@@ -1,6 +1,6 @@
--- Main controller/logic/program
 -- Andrew Michaud
 -- 2/11/14
+-- Main controller/logic for Sudoku project
 
 module Main where
 
@@ -10,15 +10,20 @@ import Text.Read
 -- Command-line stuff
 import System.Environment
 import System.Exit
+import System.IO
+import System.Console.GetOpt( getOpt, usageInfo, ArgOrder(..) )
 
 -- For maybes.
 import Data.Maybe
+
+import Data.List(nub)
 
 -- Sudoku-related things
 import Board
 import Move
 import Parse
 import View
+import Flag
 
 -- Styled (with permission) after a friend's code.
 repl :: (SudokuBoard -> Move -> Either MoveError SudokuBoard) -> (String -> Maybe Move) -> SudokuBoard -> IO ()
@@ -61,14 +66,11 @@ repl f parse initial = do
             -- The end result is that we have a new value to recurse with repl.
             repl f parse $ either (const initial) id newstate
 
+-- Die if we received a QuitError
 maybeDie :: Either MoveError SudokuBoard -> IO ()
 maybeDie val = do
     either (const die) (const continue ) val
      
-continue :: IO ()
-continue = do
-    return ()
-
 -- Try to processs a move.
 move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
 
@@ -113,7 +115,7 @@ move board (Check)
 move board (Reset) = Right $ resetBoard board
 
 -- Unimplemented.
-move board (Quit) = Left $ QuitError
+move _ (Quit) = Left $ QuitError
 
 -- Command-line stuff
 exit :: IO ()
@@ -122,36 +124,73 @@ exit = exitWith ExitSuccess
 die :: IO ()
 die = exitWith $ ExitFailure 1
 
+header :: String
+header = "Usage: sudoku-linux [-hgfV] [file]"
+
+version :: IO ()
+version = putStrLn "Sudoku-Linux version 0.4.0.0"
+
+-- Does nothing useful, but returns an IO ().
+continue :: IO ()
+continue = do
+    return ()
+
+-- Parse arguments
+commandParse :: ([Flag], [String], [String]) -> IO ([Flag], [String])
+
+commandParse (args, fs, [])
+    | Help `elem` args = do
+        hPutStrLn stderr (usageInfo header options)
+        exitWith ExitSuccess
+    | otherwise        = do
+        let files = if null fs then ["-"] else fs
+        return $ (nub args, files)
+
+
+-- Failing out.    
+commandParse (_, _, errs)   = do
+    hPutStrLn stderr (concat errs ++ ( usageInfo header options) )
+    exitWith (ExitFailure 1)
+
 main :: IO ()
 main = do
 
     -- Command line arguments.
     arguments <- getArgs
-    print arguments
+    
+    let argTriple = getOpt Permute options arguments
 
-    -- Initialize and retrieve GUI.
-    window <- initSudokuView
+    (args, _) <- commandParse argTriple
     
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"
 
-    let board = attemptLoad contents
+    -- Process arguments.
+    if Graphical `elem` args
+        
+        -- Graphical branch.
+        then do
+            -- Initialize and retrieve GUI.
+            window <- initSudokuView
+            runSudokuWindow window
+
+        -- Command line branch.
+        else do
+            let board = attemptLoad contents
     
-    runSudokuWindow window
+            -- Game header.
+            putStrLn "This is Sudoku-Linux version 0.7\n"
 
-    -- Game header.
-    putStrLn "This is Sudoku-Linux version 0.4\n"
+            -- Print original board.
+            putStrLn "This is the board\n"
 
-    -- Print original board.
-    putStrLn "This is the board\n"
+            putStrLn $ prettyPrint board
 
-    putStrLn $ prettyPrint board
+            -- Print prompt.
+            putStrLn "What would you like to do?\n"
+            
+            -- Enter control loop.
+            repl move parseMove board
 
-    -- Print prompt.
-    putStrLn "What would you like to do?\n"
-    
-    -- Enter control loop.
-    repl move parseMove board
-
-    exit
+            exit
 
