@@ -14,6 +14,7 @@ import Data.Maybe
 import Board
 import Move
 import Parse
+import View
 
 -- Styled (with permission) after a friend's code.
 repl :: (SudokuBoard -> Move -> Either MoveError SudokuBoard) -> (String -> Maybe Move) -> SudokuBoard -> IO ()
@@ -107,11 +108,14 @@ main = do
     -- Command line arguments.
     --arguments <- getArgs
 
+    window <- initSudokuView
+    
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"
 
     let board = attemptLoad contents
-
+    
+    runSudokuWindow window
     -- Game header.
     putStrLn "This is Sudoku-Linux version 0.2\n"
 
