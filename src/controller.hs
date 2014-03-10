@@ -127,8 +127,11 @@ die = exitWith $ ExitFailure 1
 header :: String
 header = "Usage: sudoku-linux [-hgfV] [file]"
 
-version :: IO ()
-version = putStrLn "Sudoku-Linux version 0.4.0.0"
+versionNum :: String
+versionNum = "0.7.0.0"
+
+version :: String
+version = "Sudoku-Linux version " ++ versionNum
 
 -- Does nothing useful, but returns an IO ().
 continue :: IO ()
@@ -139,10 +142,15 @@ continue = do
 commandParse :: ([Flag], [String], [String]) -> IO ([Flag], [String])
 
 commandParse (args, fs, [])
-    | Help `elem` args = do
+    | Help `elem` args    = do
         hPutStrLn stderr (usageInfo header options)
         exitWith ExitSuccess
-    | otherwise        = do
+    
+    | Version `elem` args = do
+        hPutStrLn stderr version
+        exitWith ExitSuccess
+    
+    | otherwise           = do
         let files = if null fs then ["-"] else fs
         return $ (nub args, files)
 
@@ -179,7 +187,7 @@ main = do
             let board = attemptLoad contents
     
             -- Game header.
-            putStrLn "This is Sudoku-Linux version 0.7\n"
+            putStrLn $ "This is Sudoku-Linux version " ++ versionNum ++ " \n"
 
             -- Print original board.
             putStrLn "This is the board\n"

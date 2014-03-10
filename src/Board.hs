@@ -23,6 +23,8 @@ module Board
 import Data.Maybe
 import Data.List
 
+import Util.Other
+
 -- Types declared.
 
 -- Location on a SudokuGrid
@@ -173,16 +175,7 @@ instance Show Location where
 
 -- Turn an int into an index value.
 toIndex :: String -> Maybe Int
-toIndex "0" = Just 0
-toIndex "1" = Just 1
-toIndex "2" = Just 2
-toIndex "3" = Just 3
-toIndex "4" = Just 4
-toIndex "5" = Just 5
-toIndex "6" = Just 6
-toIndex "7" = Just 7
-toIndex "8" = Just 8
-toIndex _   = Nothing
+toIndex str = sToIntRange str [0..8] 
 
 -- Create board from array of array of string.
 createBoard :: [[String]] -> SudokuBoard
