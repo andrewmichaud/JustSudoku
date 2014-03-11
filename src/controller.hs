@@ -66,11 +66,16 @@ repl f parse initial = do
             -- The end result is that we have a new value to recurse with repl.
             repl f parse $ either (const initial) id newstate
 
--- Die if we received a QuitError
+-- Die if we received a QuitError (by using checkError to check the error).
 maybeDie :: Either MoveError SudokuBoard -> IO ()
 maybeDie val = do
-    either (const die) (const continue ) val
+    either (checkError) (const continue ) val
      
+-- Die if passed a QuitError, otherwise do nothing.
+checkError :: MoveError -> IO ()
+checkError QuitError = die
+checkError _         = continue
+
 -- Try to processs a move.
 move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
 
