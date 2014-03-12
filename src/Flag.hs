@@ -15,13 +15,13 @@ data Flag
 
 options :: [OptDescr Flag]
 options = 
-    [ Option ['g'] ["graphical"] (NoArg Graphical)
+    [ Option "g" ["graphical"] (NoArg Graphical)
         "Start the graphical interface."
-    , Option ['f'] ["file"]      (ReqArg File "File") 
+    , Option "f" ["file"]      (ReqArg File "File") 
         "Provide a file to load a Sudoku board from."
-    , Option ['V'] ["version"]   (NoArg Version)
+    , Option "V" ["version"]   (NoArg Version)
         "Print out version information."
-    , Option ['h'] ["help"]      (NoArg Help)
+    , Option "h" ["help"]      (NoArg Help)
         "Print this help message."
     ]
 

@@ -46,30 +46,30 @@ data SudokuBoard = SudokuBoard [[Square]] deriving (Eq, Show)
 -- Convert Int to Square
 toSquare :: String -> Maybe Square
 toSquare "0" = Just Empty
-toSquare "1" = Just $ Val {value = V1, isOrig = False}
-toSquare "2" = Just $ Val {value = V2, isOrig = False}
-toSquare "3" = Just $ Val {value = V3, isOrig = False}
-toSquare "4" = Just $ Val {value = V4, isOrig = False}
-toSquare "5" = Just $ Val {value = V5, isOrig = False}
-toSquare "6" = Just $ Val {value = V6, isOrig = False}
-toSquare "7" = Just $ Val {value = V7, isOrig = False}
-toSquare "8" = Just $ Val {value = V8, isOrig = False}
-toSquare "9" = Just $ Val {value = V9, isOrig = False}
+toSquare "1" = Just Val {value = V1, isOrig = False}
+toSquare "2" = Just Val {value = V2, isOrig = False}
+toSquare "3" = Just Val {value = V3, isOrig = False}
+toSquare "4" = Just Val {value = V4, isOrig = False}
+toSquare "5" = Just Val {value = V5, isOrig = False}
+toSquare "6" = Just Val {value = V6, isOrig = False}
+toSquare "7" = Just Val {value = V7, isOrig = False}
+toSquare "8" = Just Val {value = V8, isOrig = False}
+toSquare "9" = Just Val {value = V9, isOrig = False}
 toSquare "_" = Just Empty
 toSquare _ = Nothing
 
 -- Create Location
 toLocation :: String -> String -> Maybe Location
 toLocation rowStr colStr 
-    | row == Nothing || col == Nothing = Nothing
-    | otherwise                        = Just $ Loc (fromJust row) (fromJust col)
+    | isNothing row || isNothing col = Nothing
+    | otherwise                      = Just $ Loc (fromJust row) (fromJust col)
     where
         row = toIndex rowStr
         col = toIndex colStr
 
 -- Creates empty Sudoku board.
 emptyBoard :: SudokuBoard
-emptyBoard = SudokuBoard [replicate 9 x | x <- (replicate 9 (Empty))]
+emptyBoard = SudokuBoard [replicate 9 x | x <- replicate 9 Empty]
 
 -- Attempts to load a board from a file.
 -- If it fails, an empty board is returned.
@@ -141,7 +141,7 @@ checkBoard sudokuBoard = allPairs
         subgridPairs   = checkSubgrids sudokuBoard
 
         -- Don't forget to remove duplicates within subgrids.
-        allPairs       = union (union colPairs subgridPairs) (union rowPairs subgridPairs)
+        allPairs       = (colPairs `union` subgridPairs) `union` (rowPairs `union` subgridPairs)
 
 -- Show for SudokuBoard, prints it nicely.
 prettyPrint :: SudokuBoard -> String
@@ -186,59 +186,67 @@ createBoard board = SudokuBoard values
 
 -- Identical to toSquare, but marks squares as "original" - not to be modified.
 toOrigSquare :: String -> Maybe Square
-toOrigSquare "1" = Just $ Val {value = V1, isOrig = True}
-toOrigSquare "2" = Just $ Val {value = V2, isOrig = True}
-toOrigSquare "3" = Just $ Val {value = V3, isOrig = True}
-toOrigSquare "4" = Just $ Val {value = V4, isOrig = True}
-toOrigSquare "5" = Just $ Val {value = V5, isOrig = True}
-toOrigSquare "6" = Just $ Val {value = V6, isOrig = True}
-toOrigSquare "7" = Just $ Val {value = V7, isOrig = True}
-toOrigSquare "8" = Just $ Val {value = V8, isOrig = True}
-toOrigSquare "9" = Just $ Val {value = V9, isOrig = True}
+toOrigSquare "1" = Just Val {value = V1, isOrig = True}
+toOrigSquare "2" = Just Val {value = V2, isOrig = True}
+toOrigSquare "3" = Just Val {value = V3, isOrig = True}
+toOrigSquare "4" = Just Val {value = V4, isOrig = True}
+toOrigSquare "5" = Just Val {value = V5, isOrig = True}
+toOrigSquare "6" = Just Val {value = V6, isOrig = True}
+toOrigSquare "7" = Just Val {value = V7, isOrig = True}
+toOrigSquare "8" = Just Val {value = V8, isOrig = True}
+toOrigSquare "9" = Just Val {value = V9, isOrig = True}
 toOrigSquare "_" = Just Empty
-toOrigSquare _ = Nothing
+toOrigSquare _   = Nothing
 
--- Check if a pair of Squares are equal.
-checkPair :: Square -> Square -> Bool
-checkPair (Val squareA _) (Val squareB _) = (squareA == squareB)
-checkPair _ _ = False
+-- Check a list of lists of squares for duplicates
+checkLocGrid :: [[Location]] -> SudokuBoard -> [Location]
+checkLocGrid locations board = matchingLocations
+    where squares           = map (map (getBoardValue board)) locations
+          zipped            = zipLists locations squares
+          matchingLocations = concatMap checkList zipped
+
+-- Returns a list of all pairs of locations that are invalid (for rows).
+checkRows :: SudokuBoard -> [Location]
+checkRows = checkLocGrid locations
+    where
+        locations         = [ [ Loc r c | c <- [0..8] ] | r <- [0..8] ]
+
+-- Returns a list of all pairs of locations that are invalid (for columns).
+checkCols :: SudokuBoard -> [Location]
+checkCols = checkLocGrid locations
+    where
+        locations         = [ [ Loc r c | r <- [0..8] ] | c <- [0..8] ]
+
+-- Returns a list of all pairs of locations that are invalid (for subgrids);
+checkSubgrids :: SudokuBoard -> [Location]
+checkSubgrids = checkLocGrid locations
+    where
+        locations         = map subgridHelper [0..8]
 
 -- Takes a list of tuples of Int and Square. The Int is an indexing tag.
 -- Returns a list of locations corresponding to matching squares.
 checkList :: [(Location, Square)] -> [Location]
 checkList [] = []
 checkList (x:xs)
-    | tail xs == [] = if checkPair (snd x) (snd $ head xs) then [fst x, (fst $ head xs)] else []
-    | otherwise     = answer
+    | null (tail xs) = if checkPair (snd x) (snd $ head xs) then [fst x, fst $ head xs] else []
+    | otherwise      = answer
     where
         matchingY    = [fst y | y <- xs, checkPair (snd x) (snd y)]
-        headMatching = if (length matchingY > 0) then [fst x] ++ matchingY else []
+        headMatching = if not (null matchingY) then fst x : matchingY else []
         answer       = headMatching ++ checkList xs
+
+-- Check if a pair of Squares are equal.
+checkPair :: Square -> Square -> Bool
+checkPair (Val squareA _) (Val squareB _) = squareA == squareB
+checkPair _ _ = False
+
 
 -- Helper function for check functions. Given two lists of lists, returns a list
 -- of lists of pairs.
 zipLists :: [[a]] -> [[b]] -> [[(a, b)]]
 zipLists [] _ = []
 zipLists _ [] = []
-zipLists (a:as) (b:bs) = [zip a b] ++ zipLists as bs
-
--- Returns a list of all pairs of locations that are invalid (for rows).
-checkRows :: SudokuBoard -> [Location]
-checkRows sudokuBoard = matchingLocations
-    where
-        locations         = [ [ Loc r c | c <- [0..8] ] | r <- [0..8] ]
-        squares           = map (map (getBoardValue sudokuBoard)) locations
-        zipped            = zipLists locations squares 
-        matchingLocations = concat $ map checkList zipped
-
--- Returns a list of all pairs of locations that are invalid (for columns).
-checkCols :: SudokuBoard -> [Location]
-checkCols sudokuBoard = matchingLocations
-    where
-        locations         = [ [ Loc r c | r <- [0..8] ] | c <- [0..8] ]
-        squares           = map (map (getBoardValue sudokuBoard)) locations
-        zipped            = zipLists locations squares 
-        matchingLocations = concat $ map checkList zipped
+zipLists (a:as) (b:bs) = zip a b : zipLists as bs
 
 -- Given an Int indicating the index of a subgrid, returns a list of Locations matching that
 -- subgrid.
@@ -255,15 +263,6 @@ subgridHelper 7 = [Loc r c | r <- [6..8], c <- [3..5]]
 subgridHelper 8 = [Loc r c | r <- [6..8], c <- [6..8]]
 -- Shouldn't ever get here.
 subgridHelper _ = []
-
--- Returns a list of all pairs of locations that are invalid (for subgrids);
-checkSubgrids :: SudokuBoard -> [Location]
-checkSubgrids sudokuBoard = matchingLocations
-    where
-        locations         = map subgridHelper [0..8]
-        squares           = map (map (getBoardValue sudokuBoard)) locations
-        zipped            = zipLists locations squares 
-        matchingLocations = concat $ map checkList zipped
 
 -- Given an array and a spacer, uses the spacer to separate
 -- the first three from the middle three rows and the middle

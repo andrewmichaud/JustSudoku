@@ -17,7 +17,8 @@ addToTupleIf new fstCond sndCond (f, s) = result
 
 -- Special case for adding one to tuple.
 incrementTupleIf :: (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
-incrementTupleIf fstCond sndCond oldTuple = addToTupleIf 1 fstCond sndCond oldTuple
+incrementTupleIf = addToTupleIf 1
+
 
 -- For IO
 
@@ -25,18 +26,14 @@ incrementTupleIf fstCond sndCond oldTuple = addToTupleIf 1 fstCond sndCond oldTu
 getIORow :: Int -> IO a -> IO [a]
 getIORow count func = do
     entry <- func
-    row <- replicateM (count - 1)  $ do
-        nextEntry <- func
-        return nextEntry
+    row   <- replicateM (count - 1) func
     return $ entry : row
 
 -- Given an Int n and a function returning an IO a, return an IO list of lists of n a.
 getIOGrid :: Int -> IO a -> IO [[a]]
 getIOGrid count func = do
     entryRow <- getIORow count func
-    grid <- replicateM (count - 1) $ do
-        nextEntryRow <- getIORow count func
-        return nextEntryRow
+    grid     <- replicateM (count - 1) $ getIORow count func 
     return $ entryRow : grid
 
 

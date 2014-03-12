@@ -70,10 +70,10 @@ bindGUI gui = do
 
     -- Set window parameters.
     set (mainWin gui) [ windowDefaultWidth   := 200
-                         , windowDefaultHeight  := 200
-                         , windowTitle          := "Sudoku Linux"
-                         , containerChild       := (mainBox gui)
-                         , containerBorderWidth := 10]
+                      , windowDefaultHeight  := 200
+                      , windowTitle          := "Sudoku Linux"
+                      , containerChild       := (mainBox gui)
+                      , containerBorderWidth := 10]
     
     -- Pack some other stuff.           
     boxPackStart (mainBox gui) (menuBar gui) PackNatural 0
@@ -86,17 +86,17 @@ bindGUI gui = do
 
 -- Pack an entry given the entry, a table to pack in, and coordinates.
 packEntry :: (TableClass self) => self -> Entry -> (Int, Int) -> (Int, Int) -> IO ()
-packEntry t entry (colT, colB) (rowL, rowR) = do
+packEntry t entry (colT, colB) (rowL, rowR) =
     tableAttach t entry colT colB rowL rowR [Shrink] [Shrink] 1 1
 
 -- Pack a 1D list of widgets into a table with the provided indices.
 packEntryList :: (TableClass self) => self -> [Entry] -> [(Int, Int)] -> [(Int, Int)] -> IO [()]
-packEntryList t entryArray cols rows = do
+packEntryList t entryArray cols rows =
     sequence $ zipWith3 (packEntry t) entryArray cols rows
 
 -- Pack a 2D list of entries with the provided indices.
 packAllEntries :: (TableClass self) => self -> [[Entry]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> IO [[()]]
-packAllEntries t entryArray cols rows = do
+packAllEntries t entryArray cols rows =
     sequence $ zipWith3 (packEntryList t) entryArray cols rows
 
 -- Checks whether an entry is between 1 and 9 inclusive and
@@ -109,33 +109,29 @@ validateEntry e = do
             | s == "" || s == " " = ""
             | otherwise           = maybe "1" show (sToIntRange s [1..9])
 
+-- Generate one row of Sudoku coords to be used for either columns or rows.
+sudokuCoords :: [(Int, Int)]
+sudokuCoords = filter2
+    where start  = [(x, x + 1) | x <- [0..8]] :: [(Int, Int)]
+          filter1 = map (incrementTupleIf (>2) (>2)) start
+          filter2 = map (incrementTupleIf (>6) (>6)) filter1
+
 -- Generate column coordinates for a 9x9 Sudoku grid. 
 colCoords :: [[(Int, Int)]]
-colCoords = final
-    where oneRow  = [(x, x + 1) | x <- [0..8]] :: [(Int, Int)]
-          filter1 = map (incrementTupleIf (>2) (>2)) oneRow
-          filter2 = map (incrementTupleIf (>6) (>6)) filter1
-          final   = replicate 9 filter2 :: [[(Int, Int)]]
+colCoords = replicate 9 sudokuCoords :: [[(Int, Int)]]
 
 -- Generate row coordinates for a 9x9 Sudoku grid.
 rowCoords :: [[(Int, Int)]]
-rowCoords = final
-    where oneRow  = [(x, x + 1) | x <- [0..8]] :: [(Int, Int)]
-          filter1 = map (incrementTupleIf (>2) (>2)) oneRow
-          filter2 = map (incrementTupleIf (>6) (>6)) filter1
-          final   = map (replicate 9) filter2 :: [[(Int, Int)]] 
+rowCoords = map (replicate 9) sudokuCoords :: [[(Int, Int)]] 
 
 -- Add validate function to all entries.
 addValidateFunction :: [[Entry]] -> IO [[ConnectId Entry]]
-addValidateFunction entryArray = do
-    sequence $ map (\row -> validateOne row) entryArray
-    where
-        validateOne row = sequence $ map (\entry -> onEditableChanged entry (validateEntry entry)) row
+addValidateFunction = mapM addOneRow
+    where addOneRow = mapM (\entry -> onEditableChanged entry (validateEntry entry))
 
 -- Apply a function that takes an Entry and one argument to all entries.
 -- Takes a list of lists of entries, an argument, and the function.
 applyEntriesOneArg :: [[Entry]] -> (Entry -> a -> IO b) -> a -> IO [[b]]
-applyEntriesOneArg entryArray func arg = do
-    sequence $ map (\row -> applyOneRow row) entryArray
-    where applyOneRow row = sequence $ map (\entry -> func entry arg) row
+applyEntriesOneArg entryArray func arg = mapM applyOneRow entryArray
+    where applyOneRow = mapM (`func` arg)
 
