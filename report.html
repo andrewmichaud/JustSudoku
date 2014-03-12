@@ -1,0 +1,977 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<title>HLint Report</title>
+<script type='text/javascript'>
+
+/* == Algorithm for show/unshow ==
+   Each hint/file is given a number, hint# or file#
+   When we say showOnly with a class name we add the rules to
+   the css #content div {display:none}, #content div.className {display:block}
+   When going back to showAll we remove these results
+*/
+
+// CSS MANIPULATION //
+
+function deleteRules(n)
+{
+	var css = document.styleSheets[0];
+	for (var i = 0; i < n; i++)
+		css.deleteRule(css.cssRules.length-1);
+}
+
+function insertRule(s)
+{
+	var css = document.styleSheets[0];
+	css.insertRule(s, css.cssRules.length);
+}
+
+// SHOW/HIDE LOGIC //
+
+var last = "";
+
+function show(id)
+{
+	if (id == last) return;
+	if (id == "")
+	{
+		deleteRules(3);
+		insertRule(".all {font-weight: bold;}");
+	}
+	else
+	{
+		if (last == "")
+		{
+			deleteRules(1);
+			insertRule("#content div {display:none;}");
+		}
+		else
+		{
+			deleteRules(2);
+		}
+		insertRule("#content div." + id + " {display:block;}");
+		insertRule("#" + id + "{font-weight:bold;}");
+	}
+
+	last = id;
+}
+
+</script>
+<style type="text/css">
+/* These rules are manipulated by the script.
+   The commented form is how it looks with an id selected */
+
+.all {font-weight: bold;}      /* #content div {display:none;} */
+                               /* #content div.id {display:block;} */
+                               /* #id {font-weight: bold;} */
+
+</style>
+<style type="text/css">
+/* See http://www.webreference.com/programming/css_frames/ */
+body {
+	margin:0;
+	border:0;
+	padding:0;
+	height:100%;
+	max-height:100%;
+	font-family: sans-serif;
+	font-size:76%;
+	overflow: hidden;
+}
+
+#leftbar {
+	position:absolute;
+	top:0px;
+	left:0px;
+	width: 215px;
+	bottom: 0px;
+	overflow:auto;
+	background:rgb(202,223,255);
+	margin: 10px;
+	padding-top: 0;
+	padding-left: 7px;
+	padding-right: 7px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+
+	display:none; /* Override if script present */
+}
+
+#content {
+	position:absolute;
+	top:0;
+	bottom:0;
+	right:0;
+	overflow:auto;
+	padding-bottom: 15px;
+	padding-right: 7px;
+
+	left:10px; /* Override if script present */
+}
+
+#leftbar ul {margin-top: 0px; padding-left: 15px;}
+#leftbar p {margin-bottom: 0px;}
+.note {color: gray; font-size: smaller;}
+
+pre {
+	font-family: "lucida console", monospace;
+	padding-left: 15px;
+	margin: 2px;
+}
+
+#content div {
+	margin-bottom: 10px;
+	margin-right: 10px;
+	padding-top: 4px;
+	border-top: 1px solid #ccc;
+}
+
+.script #content {left:250px;}
+.script #leftbar {display: block;}
+
+/* From HsColour */
+.hs-keyglyph, .hs-layout {color: red;}
+.hs-keyword {color: blue;}
+.hs-comment, .hs-comment a {color: green;}
+.hs-str, .hs-chr {color: teal;}
+</style>
+</head>
+<body>
+
+<script type='text/javascript'>
+document.body.className = "script";
+</script>
+
+<div id="leftbar" valign="top" style="min-width:200px">
+
+<p><a class="all" href="javascript:show('')">All hints</a></p>
+<ul>
+<li><a id="hint0" href="javascript:show('hint0')">Error: Avoid lambda (2)</a></li>
+<li><a id="hint1" href="javascript:show('hint1')">Error: Eta reduce (4)</a></li>
+<li><a id="hint2" href="javascript:show('hint2')">Error: Redundant bracket (2)</a></li>
+<li><a id="hint3" href="javascript:show('hint3')">Error: Redundant do (7)</a></li>
+<li><a id="hint4" href="javascript:show('hint4')">Error: Redundant return (2)</a></li>
+<li><a id="hint5" href="javascript:show('hint5')">Error: Use concatMap (3)</a></li>
+<li><a id="hint6" href="javascript:show('hint6')">Error: Use exitSuccess (3)</a></li>
+<li><a id="hint7" href="javascript:show('hint7')">Error: Use isNothing (13)</a></li>
+<li><a id="hint8" href="javascript:show('hint8')">Error: Use mapM (4)</a></li>
+<li><a id="hint9" href="javascript:show('hint9')">Warning: Avoid lambda (1)</a></li>
+<li><a id="hint10" href="javascript:show('hint10')">Warning: Reduce duplication (3)</a></li>
+<li><a id="hint11" href="javascript:show('hint11')">Warning: Redundant $ (23)</a></li>
+<li><a id="hint12" href="javascript:show('hint12')">Warning: Redundant bracket (7)</a></li>
+<li><a id="hint13" href="javascript:show('hint13')">Warning: Use : (2)</a></li>
+<li><a id="hint14" href="javascript:show('hint14')">Warning: Use infix (3)</a></li>
+<li><a id="hint15" href="javascript:show('hint15')">Warning: Use null (3)</a></li>
+<li><a id="hint16" href="javascript:show('hint16')">Warning: Use string literal (4)</a></li>
+</ul>
+
+<p><a class="all" href="javascript:show('')">All files</a></p>
+<ul>
+<li><a id="file0" href="javascript:show('file0')">src/Board.hs (37)</a></li>
+<li><a id="file1" href="javascript:show('file1')">src/Flag.hs (4)</a></li>
+<li><a id="file2" href="javascript:show('file2')">src/GUI.hs (14)</a></li>
+<li><a id="file3" href="javascript:show('file3')">src/Parse.hs (5)</a></li>
+<li><a id="file4" href="javascript:show('file4')">src/Util/Other.hs (3)</a></li>
+<li><a id="file5" href="javascript:show('file5')">src/controller.hs (22)</a></li>
+<li><a id="file6" href="javascript:show('file6')">src/model.hs (1)</a></li>
+</ul>
+
+</div>
+<div id="content" valign="top" width="100%">
+<p>
+	Report generated by <a href="http://community.haskell.org/~ndm/hlint/">HLint</a>
+v1.8.53
+	- a tool to suggest improvements to your Haskell code.
+</p>
+
+<div class="hint7 file3">
+src/Parse.hs:16:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>loc</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>loc</span></pre>
+
+</div>
+
+<div class="hint7 file3">
+src/Parse.hs:17:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>val</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>val</span></pre>
+
+</div>
+
+<div class="hint7 file3">
+src/Parse.hs:34:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>loc</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>loc</span></pre>
+
+</div>
+
+<div class="hint1 file3">
+src/Parse.hs:45:1: Error: Eta reduce<br/>
+Found<br/>
+<pre><span class='hs-definition'>parseSquare</span> <span class='hs-varid'>intString</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>toSquare</span> <span class='hs-varid'>intString</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>parseSquare</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>toSquare</span></pre>
+
+</div>
+
+<div class="hint1 file3">
+src/Parse.hs:49:1: Error: Eta reduce<br/>
+Found<br/>
+<pre><span class='hs-definition'>parseLocation</span> <span class='hs-varid'>rowString</span> <span class='hs-varid'>colString</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>toLocation</span> <span class='hs-varid'>rowString</span> <span class='hs-varid'>colString</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>parseLocation</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>toLocation</span></pre>
+
+</div>
+
+<div class="hint16 file1">
+src/Flag.hs:18:14: Warning: Use string literal<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-chr'>'g'</span><span class='hs-keyglyph'>]</span></pre>
+Why not<br/>
+<pre><span class='hs-str'>"g"</span></pre>
+
+</div>
+
+<div class="hint16 file1">
+src/Flag.hs:20:14: Warning: Use string literal<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-chr'>'f'</span><span class='hs-keyglyph'>]</span></pre>
+Why not<br/>
+<pre><span class='hs-str'>"f"</span></pre>
+
+</div>
+
+<div class="hint16 file1">
+src/Flag.hs:22:14: Warning: Use string literal<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-chr'>'V'</span><span class='hs-keyglyph'>]</span></pre>
+Why not<br/>
+<pre><span class='hs-str'>"V"</span></pre>
+
+</div>
+
+<div class="hint16 file1">
+src/Flag.hs:24:14: Warning: Use string literal<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-chr'>'h'</span><span class='hs-keyglyph'>]</span></pre>
+Why not<br/>
+<pre><span class='hs-str'>"h"</span></pre>
+
+</div>
+
+<div class="hint1 file6">
+src/model.hs:29:1: Error: Eta reduce<br/>
+Found<br/>
+<pre><span class='hs-definition'>process</span> <span class='hs-varid'>s</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>show</span> <span class='hs-varid'>s</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>process</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>show</span></pre>
+
+</div>
+
+<div class="hint3 file5">
+src/controller.hs:71:16: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>either</span> <span class='hs-layout'>(</span><span class='hs-varid'>checkError</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>const</span> <span class='hs-varid'>continue</span><span class='hs-layout'>)</span> <span class='hs-varid'>val</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>either</span> <span class='hs-layout'>(</span><span class='hs-varid'>checkError</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>const</span> <span class='hs-varid'>continue</span><span class='hs-layout'>)</span> <span class='hs-varid'>val</span></pre>
+
+</div>
+
+<div class="hint2 file5">
+src/controller.hs:72:12: Error: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-layout'>(</span><span class='hs-varid'>checkError</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>checkError</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:85:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>rowInt</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>rowInt</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:86:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>colInt</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>colInt</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:87:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>valInt</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>valInt</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:88:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>location</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>location</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:89:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>value</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>value</span></pre>
+
+</div>
+
+<div class="hint11 file5">
+src/controller.hs:90:29: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Right</span> <span class='hs-varop'>$</span> <span class='hs-varid'>newBoard</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Right</span> <span class='hs-varid'>newBoard</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:101:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>rowInt</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>rowInt</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:102:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>colInt</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>colInt</span></pre>
+
+</div>
+
+<div class="hint7 file5">
+src/controller.hs:103:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>location</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>location</span></pre>
+
+</div>
+
+<div class="hint11 file5">
+src/controller.hs:104:29: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Right</span> <span class='hs-varop'>$</span> <span class='hs-varid'>newBoard</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Right</span> <span class='hs-varid'>newBoard</span></pre>
+
+</div>
+
+<div class="hint15 file5">
+src/controller.hs:114:7: Warning: Use null<br/>
+Found<br/>
+<pre><span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-varid'>invalidSquares</span><span class='hs-layout'>)</span> <span class='hs-varop'>&gt;</span> <span class='hs-num'>0</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>not</span> <span class='hs-layout'>(</span><span class='hs-varid'>null</span> <span class='hs-varid'>invalidSquares</span><span class='hs-layout'>)</span></pre>
+<span class='note'>Note: increases laziness</span>
+</div>
+
+<div class="hint12 file5">
+src/controller.hs:114:7: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-varid'>invalidSquares</span><span class='hs-layout'>)</span> <span class='hs-varop'>&gt;</span> <span class='hs-num'>0</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>length</span> <span class='hs-varid'>invalidSquares</span> <span class='hs-varop'>&gt;</span> <span class='hs-num'>0</span></pre>
+
+</div>
+
+<div class="hint11 file5">
+src/controller.hs:115:37: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Right</span> <span class='hs-varop'>$</span> <span class='hs-varid'>board</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Right</span> <span class='hs-varid'>board</span></pre>
+
+</div>
+
+<div class="hint11 file5">
+src/controller.hs:123:17: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Left</span> <span class='hs-varop'>$</span> <span class='hs-conid'>QuitError</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Left</span> <span class='hs-conid'>QuitError</span></pre>
+
+</div>
+
+<div class="hint6 file5">
+src/controller.hs:127:8: Error: Use exitSuccess<br/>
+Found<br/>
+<pre><span class='hs-definition'>exitWith</span> <span class='hs-conid'>ExitSuccess</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>exitSuccess</span></pre>
+
+</div>
+
+<div class="hint3 file5">
+src/controller.hs:143:12: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>return</span> <span class='hs-conid'>()</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>return</span> <span class='hs-conid'>()</span></pre>
+
+</div>
+
+<div class="hint6 file5">
+src/controller.hs:152:9: Error: Use exitSuccess<br/>
+Found<br/>
+<pre><span class='hs-definition'>exitWith</span> <span class='hs-conid'>ExitSuccess</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>exitSuccess</span></pre>
+
+</div>
+
+<div class="hint6 file5">
+src/controller.hs:156:9: Error: Use exitSuccess<br/>
+Found<br/>
+<pre><span class='hs-definition'>exitWith</span> <span class='hs-conid'>ExitSuccess</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>exitSuccess</span></pre>
+
+</div>
+
+<div class="hint11 file5">
+src/controller.hs:160:9: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-definition'>return</span> <span class='hs-varop'>$</span> <span class='hs-layout'>(</span><span class='hs-varid'>nub</span> <span class='hs-varid'>args</span><span class='hs-layout'>,</span> <span class='hs-varid'>files</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>return</span> <span class='hs-layout'>(</span><span class='hs-varid'>nub</span> <span class='hs-varid'>args</span><span class='hs-layout'>,</span> <span class='hs-varid'>files</span><span class='hs-layout'>)</span></pre>
+
+</div>
+
+<div class="hint12 file5">
+src/controller.hs:165:23: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-definition'>concat</span> <span class='hs-varid'>errs</span> <span class='hs-varop'>++</span> <span class='hs-layout'>(</span><span class='hs-varid'>usageInfo</span> <span class='hs-varid'>header</span> <span class='hs-varid'>options</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>concat</span> <span class='hs-varid'>errs</span> <span class='hs-varop'>++</span> <span class='hs-varid'>usageInfo</span> <span class='hs-varid'>header</span> <span class='hs-varid'>options</span></pre>
+
+</div>
+
+<div class="hint10 file0">
+src/Board.hs:230:9: Warning: Reduce duplication<br/>
+Found<br/>
+<pre><span class='hs-definition'>squares</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-varid'>getBoardValue</span> <span class='hs-varid'>sudokuBoard</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varid'>locations</span>
+<span class='hs-definition'>zipped</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>zipLists</span> <span class='hs-varid'>locations</span> <span class='hs-varid'>squares</span>
+<span class='hs-definition'>matchingLocations</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>concat</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span>
+</pre>
+Why not<br/>
+<pre><span class='hs-conid'>Combine</span> <span class='hs-varid'>with</span> <span class='hs-varid'>src</span><span class='hs-varop'>/</span><span class='hs-conid'>Board</span><span class='hs-varop'>.</span><span class='hs-varid'>hs</span><span class='hs-conop'>:</span><span class='hs-num'>239</span><span class='hs-conop'>:</span><span class='hs-num'>9</span></pre>
+
+</div>
+
+<div class="hint10 file0">
+src/Board.hs:230:9: Warning: Reduce duplication<br/>
+Found<br/>
+<pre><span class='hs-definition'>squares</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-varid'>getBoardValue</span> <span class='hs-varid'>sudokuBoard</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varid'>locations</span>
+<span class='hs-definition'>zipped</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>zipLists</span> <span class='hs-varid'>locations</span> <span class='hs-varid'>squares</span>
+<span class='hs-definition'>matchingLocations</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>concat</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span>
+</pre>
+Why not<br/>
+<pre><span class='hs-conid'>Combine</span> <span class='hs-varid'>with</span> <span class='hs-varid'>src</span><span class='hs-varop'>/</span><span class='hs-conid'>Board</span><span class='hs-varop'>.</span><span class='hs-varid'>hs</span><span class='hs-conop'>:</span><span class='hs-num'>264</span><span class='hs-conop'>:</span><span class='hs-num'>9</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:49:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V1</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V1</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:50:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V2</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V2</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:51:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V3</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V3</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:52:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V4</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V4</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:53:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V5</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V5</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:54:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V6</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V6</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:55:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V7</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V7</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:56:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V8</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V8</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:57:16: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V9</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V9</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>False</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint7 file0">
+src/Board.hs:64:7: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>row</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>row</span></pre>
+
+</div>
+
+<div class="hint7 file0">
+src/Board.hs:64:25: Error: Use isNothing<br/>
+Found<br/>
+<pre><span class='hs-definition'>col</span> <span class='hs-varop'>==</span> <span class='hs-conid'>Nothing</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>isNothing</span> <span class='hs-varid'>col</span></pre>
+
+</div>
+
+<div class="hint12 file0">
+src/Board.hs:72:26: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-varid'>replicate</span> <span class='hs-num'>9</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-layout'>(</span><span class='hs-varid'>replicate</span> <span class='hs-num'>9</span> <span class='hs-layout'>(</span><span class='hs-conid'>Empty</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span><span class='hs-keyglyph'>]</span></pre>
+Why not<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-varid'>replicate</span> <span class='hs-num'>9</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>replicate</span> <span class='hs-num'>9</span> <span class='hs-layout'>(</span><span class='hs-conid'>Empty</span><span class='hs-layout'>)</span><span class='hs-keyglyph'>]</span></pre>
+
+</div>
+
+<div class="hint2 file0">
+src/Board.hs:72:61: Error: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-layout'>(</span><span class='hs-conid'>Empty</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Empty</span></pre>
+
+</div>
+
+<div class="hint14 file0">
+src/Board.hs:144:26: Warning: Use infix<br/>
+Found<br/>
+<pre><span class='hs-definition'>union</span> <span class='hs-layout'>(</span><span class='hs-varid'>union</span> <span class='hs-varid'>colPairs</span> <span class='hs-varid'>subgridPairs</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varid'>union</span> <span class='hs-varid'>rowPairs</span> <span class='hs-varid'>subgridPairs</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>union</span> <span class='hs-varid'>colPairs</span> <span class='hs-varid'>subgridPairs</span> <span class='hs-varop'>`union`</span> <span class='hs-varid'>union</span> <span class='hs-varid'>rowPairs</span> <span class='hs-varid'>subgridPairs</span></pre>
+
+</div>
+
+<div class="hint14 file0">
+src/Board.hs:144:33: Warning: Use infix<br/>
+Found<br/>
+<pre><span class='hs-definition'>union</span> <span class='hs-varid'>colPairs</span> <span class='hs-varid'>subgridPairs</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>colPairs</span> <span class='hs-varop'>`union`</span> <span class='hs-varid'>subgridPairs</span></pre>
+
+</div>
+
+<div class="hint14 file0">
+src/Board.hs:144:63: Warning: Use infix<br/>
+Found<br/>
+<pre><span class='hs-definition'>union</span> <span class='hs-varid'>rowPairs</span> <span class='hs-varid'>subgridPairs</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>rowPairs</span> <span class='hs-varop'>`union`</span> <span class='hs-varid'>subgridPairs</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:189:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V1</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V1</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:190:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V2</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V2</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:191:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V3</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V3</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:192:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V4</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V4</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:193:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V5</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V5</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:194:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V6</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V6</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:195:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V7</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V7</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:196:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V8</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V8</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint11 file0">
+src/Board.hs:197:20: Warning: Redundant $<br/>
+Found<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-varop'>$</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V9</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+Why not<br/>
+<pre><span class='hs-conid'>Just</span> <span class='hs-conid'>Val</span><span class='hs-layout'>{</span><span class='hs-varid'>value</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>V9</span><span class='hs-layout'>,</span> <span class='hs-varid'>isOrig</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>True</span><span class='hs-layout'>}</span></pre>
+
+</div>
+
+<div class="hint12 file0">
+src/Board.hs:203:45: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-layout'>(</span><span class='hs-varid'>squareA</span> <span class='hs-varop'>==</span> <span class='hs-varid'>squareB</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>squareA</span> <span class='hs-varop'>==</span> <span class='hs-varid'>squareB</span></pre>
+
+</div>
+
+<div class="hint15 file0">
+src/Board.hs:211:7: Warning: Use null<br/>
+Found<br/>
+<pre><span class='hs-definition'>tail</span> <span class='hs-varid'>xs</span> <span class='hs-varop'>==</span> <span class='hs-conid'>[]</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>null</span> <span class='hs-layout'>(</span><span class='hs-varid'>tail</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span></pre>
+
+</div>
+
+<div class="hint12 file0">
+src/Board.hs:211:65: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-varid'>fst</span> <span class='hs-varid'>x</span><span class='hs-layout'>,</span> <span class='hs-layout'>(</span><span class='hs-varid'>fst</span> <span class='hs-varop'>$</span> <span class='hs-varid'>head</span> <span class='hs-varid'>xs</span><span class='hs-layout'>)</span><span class='hs-keyglyph'>]</span></pre>
+Why not<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-varid'>fst</span> <span class='hs-varid'>x</span><span class='hs-layout'>,</span> <span class='hs-varid'>fst</span> <span class='hs-varop'>$</span> <span class='hs-varid'>head</span> <span class='hs-varid'>xs</span><span class='hs-keyglyph'>]</span></pre>
+
+</div>
+
+<div class="hint12 file0">
+src/Board.hs:215:24: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-keyword'>if</span> <span class='hs-layout'>(</span><span class='hs-varid'>length</span> <span class='hs-varid'>matchingY</span> <span class='hs-varop'>&gt;</span> <span class='hs-num'>0</span><span class='hs-layout'>)</span> <span class='hs-keyword'>then</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>fst</span> <span class='hs-varid'>x</span><span class='hs-keyglyph'>]</span> <span class='hs-varop'>++</span> <span class='hs-varid'>matchingY</span> <span class='hs-keyword'>else</span> <span class='hs-conid'>[]</span></pre>
+Why not<br/>
+<pre><span class='hs-keyword'>if</span> <span class='hs-varid'>length</span> <span class='hs-varid'>matchingY</span> <span class='hs-varop'>&gt;</span> <span class='hs-num'>0</span> <span class='hs-keyword'>then</span> <span class='hs-keyglyph'>[</span><span class='hs-varid'>fst</span> <span class='hs-varid'>x</span><span class='hs-keyglyph'>]</span> <span class='hs-varop'>++</span> <span class='hs-varid'>matchingY</span> <span class='hs-keyword'>else</span> <span class='hs-conid'>[]</span></pre>
+
+</div>
+
+<div class="hint15 file0">
+src/Board.hs:215:28: Warning: Use null<br/>
+Found<br/>
+<pre><span class='hs-definition'>length</span> <span class='hs-varid'>matchingY</span> <span class='hs-varop'>&gt;</span> <span class='hs-num'>0</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>not</span> <span class='hs-layout'>(</span><span class='hs-varid'>null</span> <span class='hs-varid'>matchingY</span><span class='hs-layout'>)</span></pre>
+<span class='note'>Note: increases laziness</span>
+</div>
+
+<div class="hint13 file0">
+src/Board.hs:215:55: Warning: Use :<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-varid'>fst</span> <span class='hs-varid'>x</span><span class='hs-keyglyph'>]</span> <span class='hs-varop'>++</span> <span class='hs-varid'>matchingY</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>fst</span> <span class='hs-varid'>x</span> <span class='hs-conop'>:</span> <span class='hs-varid'>matchingY</span></pre>
+
+</div>
+
+<div class="hint13 file0">
+src/Board.hs:223:26: Warning: Use :<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>[</span><span class='hs-varid'>zip</span> <span class='hs-varid'>a</span> <span class='hs-varid'>b</span><span class='hs-keyglyph'>]</span> <span class='hs-varop'>++</span> <span class='hs-varid'>zipLists</span> <span class='hs-keyword'>as</span> <span class='hs-varid'>bs</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>zip</span> <span class='hs-varid'>a</span> <span class='hs-varid'>b</span> <span class='hs-conop'>:</span> <span class='hs-varid'>zipLists</span> <span class='hs-keyword'>as</span> <span class='hs-varid'>bs</span></pre>
+
+</div>
+
+<div class="hint5 file0">
+src/Board.hs:232:29: Error: Use concatMap<br/>
+Found<br/>
+<pre><span class='hs-definition'>concat</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>concatMap</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span></pre>
+
+</div>
+
+<div class="hint5 file0">
+src/Board.hs:241:29: Error: Use concatMap<br/>
+Found<br/>
+<pre><span class='hs-definition'>concat</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>concatMap</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span></pre>
+
+</div>
+
+<div class="hint5 file0">
+src/Board.hs:266:29: Error: Use concatMap<br/>
+Found<br/>
+<pre><span class='hs-definition'>concat</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>concatMap</span> <span class='hs-varid'>checkList</span> <span class='hs-varid'>zipped</span></pre>
+
+</div>
+
+<div class="hint10 file2">
+src/GUI.hs:115:11: Warning: Reduce duplication<br/>
+Found<br/>
+<pre><span class='hs-definition'>oneRow</span> <span class='hs-keyglyph'>=</span> <span class='hs-keyglyph'>[</span><span class='hs-layout'>(</span><span class='hs-varid'>x</span><span class='hs-layout'>,</span> <span class='hs-varid'>x</span> <span class='hs-varop'>+</span> <span class='hs-num'>1</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>|</span> <span class='hs-varid'>x</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-keyglyph'>[</span><span class='hs-num'>0</span> <span class='hs-keyglyph'>..</span> <span class='hs-num'>8</span><span class='hs-keyglyph'>]</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>::</span> <span class='hs-keyglyph'>[</span><span class='hs-layout'>(</span><span class='hs-conid'>Int</span><span class='hs-layout'>,</span> <span class='hs-conid'>Int</span><span class='hs-layout'>)</span><span class='hs-keyglyph'>]</span>
+<span class='hs-definition'>filter1</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-varid'>incrementTupleIf</span> <span class='hs-layout'>(</span><span class='hs-varop'>&gt;</span> <span class='hs-num'>2</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varop'>&gt;</span> <span class='hs-num'>2</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varid'>oneRow</span>
+<span class='hs-definition'>filter2</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-varid'>incrementTupleIf</span> <span class='hs-layout'>(</span><span class='hs-varop'>&gt;</span> <span class='hs-num'>6</span><span class='hs-layout'>)</span> <span class='hs-layout'>(</span><span class='hs-varop'>&gt;</span> <span class='hs-num'>6</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varid'>filter1</span>
+</pre>
+Why not<br/>
+<pre><span class='hs-conid'>Combine</span> <span class='hs-varid'>with</span> <span class='hs-varid'>src</span><span class='hs-varop'>/</span><span class='hs-conid'>GUI</span><span class='hs-varop'>.</span><span class='hs-varid'>hs</span><span class='hs-conop'>:</span><span class='hs-num'>123</span><span class='hs-conop'>:</span><span class='hs-num'>11</span></pre>
+
+</div>
+
+<div class="hint12 file2">
+src/GUI.hs:75:28: Warning: Redundant bracket<br/>
+Found<br/>
+<pre><span class='hs-definition'>containerChild</span> <span class='hs-conop'>:=</span> <span class='hs-layout'>(</span><span class='hs-varid'>mainBox</span> <span class='hs-varid'>gui</span><span class='hs-layout'>)</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>containerChild</span> <span class='hs-conop'>:=</span> <span class='hs-varid'>mainBox</span> <span class='hs-varid'>gui</span></pre>
+
+</div>
+
+<div class="hint3 file2">
+src/GUI.hs:89:47: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>tableAttach</span> <span class='hs-varid'>t</span> <span class='hs-varid'>entry</span> <span class='hs-varid'>colT</span> <span class='hs-varid'>colB</span> <span class='hs-varid'>rowL</span> <span class='hs-varid'>rowR</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Shrink</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Shrink</span><span class='hs-keyglyph'>]</span> <span class='hs-num'>1</span> <span class='hs-num'>1</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>tableAttach</span> <span class='hs-varid'>t</span> <span class='hs-varid'>entry</span> <span class='hs-varid'>colT</span> <span class='hs-varid'>colB</span> <span class='hs-varid'>rowL</span> <span class='hs-varid'>rowR</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Shrink</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Shrink</span><span class='hs-keyglyph'>]</span> <span class='hs-num'>1</span> <span class='hs-num'>1</span></pre>
+
+</div>
+
+<div class="hint3 file2">
+src/GUI.hs:94:40: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>zipWith3</span> <span class='hs-layout'>(</span><span class='hs-varid'>packEntry</span> <span class='hs-varid'>t</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span> <span class='hs-varid'>cols</span> <span class='hs-varid'>rows</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>zipWith3</span> <span class='hs-layout'>(</span><span class='hs-varid'>packEntry</span> <span class='hs-varid'>t</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span> <span class='hs-varid'>cols</span> <span class='hs-varid'>rows</span></pre>
+
+</div>
+
+<div class="hint3 file2">
+src/GUI.hs:99:41: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>zipWith3</span> <span class='hs-layout'>(</span><span class='hs-varid'>packEntryList</span> <span class='hs-varid'>t</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span> <span class='hs-varid'>cols</span> <span class='hs-varid'>rows</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>zipWith3</span> <span class='hs-layout'>(</span><span class='hs-varid'>packEntryList</span> <span class='hs-varid'>t</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span> <span class='hs-varid'>cols</span> <span class='hs-varid'>rows</span></pre>
+
+</div>
+
+<div class="hint3 file2">
+src/GUI.hs:130:34: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>validateOne</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>validateOne</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+
+</div>
+
+<div class="hint8 file2">
+src/GUI.hs:131:5: Error: Use mapM<br/>
+Found<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>validateOne</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>mapM</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>validateOne</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+
+</div>
+
+<div class="hint0 file2">
+src/GUI.hs:131:21: Error: Avoid lambda<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>validateOne</span> <span class='hs-varid'>row</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>validateOne</span></pre>
+
+</div>
+
+<div class="hint8 file2">
+src/GUI.hs:133:27: Error: Use mapM<br/>
+Found<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span>
+  <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>entry</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>onEditableChanged</span> <span class='hs-varid'>entry</span> <span class='hs-layout'>(</span><span class='hs-varid'>validateEntry</span> <span class='hs-varid'>entry</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varid'>row</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>mapM</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>entry</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>onEditableChanged</span> <span class='hs-varid'>entry</span> <span class='hs-layout'>(</span><span class='hs-varid'>validateEntry</span> <span class='hs-varid'>entry</span><span class='hs-layout'>)</span><span class='hs-layout'>)</span> <span class='hs-varid'>row</span></pre>
+
+</div>
+
+<div class="hint3 file2">
+src/GUI.hs:138:42: Error: Redundant do<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>applyOneRow</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>applyOneRow</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+
+</div>
+
+<div class="hint8 file2">
+src/GUI.hs:139:5: Error: Use mapM<br/>
+Found<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>applyOneRow</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>mapM</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>applyOneRow</span> <span class='hs-varid'>row</span><span class='hs-layout'>)</span> <span class='hs-varid'>entryArray</span></pre>
+
+</div>
+
+<div class="hint0 file2">
+src/GUI.hs:139:21: Error: Avoid lambda<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>\</span> <span class='hs-varid'>row</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>applyOneRow</span> <span class='hs-varid'>row</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>applyOneRow</span></pre>
+
+</div>
+
+<div class="hint8 file2">
+src/GUI.hs:140:29: Error: Use mapM<br/>
+Found<br/>
+<pre><span class='hs-definition'>sequence</span> <span class='hs-varop'>$</span> <span class='hs-varid'>map</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>entry</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>func</span> <span class='hs-varid'>entry</span> <span class='hs-varid'>arg</span><span class='hs-layout'>)</span> <span class='hs-varid'>row</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>mapM</span> <span class='hs-layout'>(</span><span class='hs-keyglyph'>\</span> <span class='hs-varid'>entry</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>func</span> <span class='hs-varid'>entry</span> <span class='hs-varid'>arg</span><span class='hs-layout'>)</span> <span class='hs-varid'>row</span></pre>
+
+</div>
+
+<div class="hint9 file2">
+src/GUI.hs:140:45: Warning: Avoid lambda<br/>
+Found<br/>
+<pre><span class='hs-keyglyph'>\</span> <span class='hs-varid'>entry</span> <span class='hs-keyglyph'>-&gt;</span> <span class='hs-varid'>func</span> <span class='hs-varid'>entry</span> <span class='hs-varid'>arg</span></pre>
+Why not<br/>
+<pre><span class='hs-layout'>(</span><span class='hs-varop'>`func`</span> <span class='hs-varid'>arg</span><span class='hs-layout'>)</span></pre>
+
+</div>
+
+<div class="hint1 file4">
+src/Util/Other.hs:20:1: Error: Eta reduce<br/>
+Found<br/>
+<pre><span class='hs-definition'>incrementTupleIf</span> <span class='hs-varid'>fstCond</span> <span class='hs-varid'>sndCond</span> <span class='hs-varid'>oldTuple</span>
+  <span class='hs-keyglyph'>=</span> <span class='hs-varid'>addToTupleIf</span> <span class='hs-num'>1</span> <span class='hs-varid'>fstCond</span> <span class='hs-varid'>sndCond</span> <span class='hs-varid'>oldTuple</span></pre>
+Why not<br/>
+<pre><span class='hs-definition'>incrementTupleIf</span> <span class='hs-keyglyph'>=</span> <span class='hs-varid'>addToTupleIf</span> <span class='hs-num'>1</span></pre>
+
+</div>
+
+<div class="hint4 file4">
+src/Util/Other.hs:28:38: Error: Redundant return<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>nextEntry</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>func</span>
+   <span class='hs-varid'>return</span> <span class='hs-varid'>nextEntry</span></pre>
+Why not<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>func</span></pre>
+
+</div>
+
+<div class="hint4 file4">
+src/Util/Other.hs:37:38: Error: Redundant return<br/>
+Found<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>nextEntryRow</span> <span class='hs-keyglyph'>&lt;-</span> <span class='hs-varid'>getIORow</span> <span class='hs-varid'>count</span> <span class='hs-varid'>func</span>
+   <span class='hs-varid'>return</span> <span class='hs-varid'>nextEntryRow</span></pre>
+Why not<br/>
+<pre><span class='hs-keyword'>do</span> <span class='hs-varid'>getIORow</span> <span class='hs-varid'>count</span> <span class='hs-varid'>func</span></pre>
+
+</div>
+
+</div>
+</body>
+</html>
