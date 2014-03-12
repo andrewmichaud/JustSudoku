@@ -68,8 +68,7 @@ repl f parse initial = do
 
 -- Die if we received a QuitError (by using checkError to check the error).
 maybeDie :: Either MoveError SudokuBoard -> IO ()
-maybeDie val = do
-    either (checkError) (const continue ) val
+maybeDie = either checkError (const continue )
      
 -- Die if passed a QuitError, otherwise do nothing.
 checkError :: MoveError -> IO ()
@@ -82,12 +81,12 @@ move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
 -- Set value to board. If an error occurs, the value will not be set. If no error occurs, the
 -- requested value will be set.
 move board (Set row col val)
-    | rowInt   == Nothing = Left $ NaNError row
-    | colInt   == Nothing = Left $ NaNError col
-    | valInt   == Nothing = Left $ NaNError val
-    | location == Nothing = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
-    | value    == Nothing = Left $ InvalidValueError (fromJust valInt)
-    | otherwise           = Right $ newBoard
+    | isNothing rowInt   = Left $ NaNError row
+    | isNothing colInt   = Left $ NaNError col
+    | isNothing valInt   = Left $ NaNError val
+    | isNothing location = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
+    | isNothing value    = Left $ InvalidValueError (fromJust valInt)
+    | otherwise          = Right newBoard
     where
         location = parseLocation row col
         value    = parseSquare val
@@ -98,10 +97,10 @@ move board (Set row col val)
 
 -- Erase requested value. If an error occurs, the value will not be erased.
 move board (Erase row col)
-    | rowInt   == Nothing = Left $ NaNError row
-    | colInt   == Nothing = Left $ NaNError col
-    | location == Nothing = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
-    | otherwise           = Right $ newBoard
+    | isNothing rowInt    = Left $ NaNError row
+    | isNothing colInt    = Left $ NaNError col
+    | isNothing location  = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
+    | otherwise           = Right newBoard
     where
         location = parseLocation row col
         rowInt   = readMaybe row
@@ -111,8 +110,8 @@ move board (Erase row col)
 -- Check if any squares are invalid. "Error" and show invalid squares if any exist. 
 -- In any case, the original board will remain.
 move board (Check)
-    | (length invalidSquares) > 0 = Left $ InvalidBoardError invalidSquares
-    | otherwise                   = Right $ board
+    | not (null invalidSquares) = Left $ InvalidBoardError invalidSquares
+    | otherwise                 = Right board
     where
         invalidSquares = checkBoard board
 
@@ -120,11 +119,11 @@ move board (Check)
 move board (Reset) = Right $ resetBoard board
 
 -- Unimplemented.
-move _ (Quit) = Left $ QuitError
+move _ (Quit) = Left QuitError
 
 -- Command-line stuff
 exit :: IO ()
-exit = exitWith ExitSuccess
+exit = exitSuccess
 
 die :: IO ()
 die = exitWith $ ExitFailure 1
@@ -140,8 +139,7 @@ version = "Sudoku-Linux version " ++ versionNum
 
 -- Does nothing useful, but returns an IO ().
 continue :: IO ()
-continue = do
-    return ()
+continue = return ()
 
 -- Parse arguments
 commandParse :: ([Flag], [String], [String]) -> IO ([Flag], [String])
@@ -149,20 +147,20 @@ commandParse :: ([Flag], [String], [String]) -> IO ([Flag], [String])
 commandParse (args, fs, [])
     | Help `elem` args    = do
         hPutStrLn stderr (usageInfo header options)
-        exitWith ExitSuccess
+        exitSuccess
     
     | Version `elem` args = do
         hPutStrLn stderr version
-        exitWith ExitSuccess
+        exitSuccess
     
     | otherwise           = do
         let files = if null fs then ["-"] else fs
-        return $ (nub args, files)
+        return (nub args, files)
 
 
 -- Failing out.    
 commandParse (_, _, errs)   = do
-    hPutStrLn stderr (concat errs ++ ( usageInfo header options) )
+    hPutStrLn stderr (concat errs ++ usageInfo header options)
     exitWith (ExitFailure 1)
 
 main :: IO ()
