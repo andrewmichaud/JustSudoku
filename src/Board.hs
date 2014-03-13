@@ -167,7 +167,7 @@ prettyPrint (SudokuBoard board) = niceBoard
 
 -- Show either the number, or "E" for empty.
 instance Show Square where
-    show (Empty)          = "E"
+    show (Empty)          = "_"
     show (Val v _) = tail $ show v
 
 instance Show Location where
