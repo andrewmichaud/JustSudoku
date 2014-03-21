@@ -12,7 +12,7 @@ import Graphics.UI.Gtk
 -- Importing utilities.
 import Util.Other
 
--- GUI datatype
+-- | GUI datatype for a Sudoku window.
 data GUI = GUI { mainWin :: Window
                , mainBox :: VBox
                , tableBox :: HBox
@@ -25,7 +25,7 @@ data GUI = GUI { mainWin :: Window
              
                }
 
--- Initialize GUI type
+-- | Initialize a Sudoku GUI and setup GTK+.
 initSudokuGUI :: IO GUI
 initSudokuGUI = do
     
@@ -54,7 +54,7 @@ initSudokuGUI = do
     
     bindGUI gui
 
--- bind items to GUI
+-- | Bind GUI elements to the window.
 bindGUI :: GUI -> IO GUI
 bindGUI gui = do    
     -- Add items to menu.
@@ -89,23 +89,24 @@ bindGUI gui = do
 
 -- Helper functions. Not exported.
 
--- Pack an entry given the entry, a table to pack in, and coordinates.
+-- | Pack an entry given the entry, a table to pack in, and coordinates.
 packEntry :: (TableClass self) => self -> Entry -> (Int, Int) -> (Int, Int) -> IO ()
 packEntry t entry (colT, colB) (rowL, rowR) =
     tableAttach t entry colT colB rowL rowR [Shrink] [Shrink] 1 1
 
--- Pack a 1D list of widgets into a table with the provided indices.
+-- | Pack a 1D list of widgets into a table with the provided indices.
 packEntryList :: (TableClass self) => self -> [Entry] -> [(Int, Int)] -> [(Int, Int)] -> IO [()]
 packEntryList t entryArray cols rows =
     sequence $ zipWith3 (packEntry t) entryArray cols rows
 
--- Pack a 2D list of entries with the provided indices.
-packAllEntries :: (TableClass self) => self -> [[Entry]] -> [[(Int, Int)]] -> [[(Int, Int)]] -> IO [[()]]
+-- | Pack a 2D list of entries with the provided indices.
+packAllEntries :: (TableClass self) => self -> [[Entry]] -> [[(Int, Int)]] -> [[(Int, Int)]] 
+                                            -> IO [[()]]
 packAllEntries t entryArray cols rows =
     sequence $ zipWith3 (packEntryList t) entryArray cols rows
 
--- Checks whether an entry is between 1 and 9 inclusive and
--- discards it otherwise.
+-- | Checks whether an entry is between 1 and 9 inclusive and discards it otherwise.
+--   Currently uses a hardcoded value, but should eventually reset to an "old" value.
 validateEntry :: Entry -> IO ()
 validateEntry e = do
     text <- entryGetText e
@@ -114,28 +115,28 @@ validateEntry e = do
             | s == "" || s == " " = ""
             | otherwise           = maybe "1" show (sToIntRange s [1..9])
 
--- Generate one row of Sudoku coords to be used for either columns or rows.
+-- | Generate one row of Sudoku coords to be used for either columns or rows.
 sudokuCoords :: [(Int, Int)]
 sudokuCoords = filter2
     where start  = [(x, x + 1) | x <- [0..8]] :: [(Int, Int)]
           filter1 = map (incrementTupleIf (>2) (>2)) start
           filter2 = map (incrementTupleIf (>6) (>6)) filter1
 
--- Generate column coordinates for a 9x9 Sudoku grid. 
+-- | Generate column coordinates for a 9x9 Sudoku grid. 
 colCoords :: [[(Int, Int)]]
 colCoords = replicate 9 sudokuCoords :: [[(Int, Int)]]
 
--- Generate row coordinates for a 9x9 Sudoku grid.
+-- | Generate row coordinates for a 9x9 Sudoku grid.
 rowCoords :: [[(Int, Int)]]
 rowCoords = map (replicate 9) sudokuCoords :: [[(Int, Int)]] 
 
--- Add validate function to all entries.
+-- | Add validate function to all entries.
 addValidateFunction :: [[Entry]] -> IO [[ConnectId Entry]]
 addValidateFunction = mapM addOneRow
     where addOneRow = mapM (\entry -> onEditableChanged entry (validateEntry entry))
 
--- Apply a function that takes an Entry and one argument to all entries.
--- Takes a list of lists of entries, an argument, and the function.
+-- | Apply a function that takes an Entry and one argument to all entries.
+--   Takes a list of lists of entries, an argument, and the function.
 applyEntriesOneArg :: [[Entry]] -> (Entry -> a -> IO b) -> a -> IO [[b]]
 applyEntriesOneArg entryArray func arg = mapM applyOneRow entryArray
     where applyOneRow = mapM (`func` arg)

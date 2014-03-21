@@ -6,6 +6,7 @@ module Flag where
 
 import System.Console.GetOpt
 
+-- | Datatype for command-line flags.
 data Flag
     = Graphical   -- --graphical, -g
     | Help        -- --help, -h
@@ -13,6 +14,7 @@ data Flag
     | File String -- -f <file>
     deriving (Eq, Ord, Show)
 
+-- | Describe all allowed command-line options.
 options :: [OptDescr Flag]
 options = 
     [ Option "g" ["graphical"] (NoArg Graphical)

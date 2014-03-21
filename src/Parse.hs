@@ -8,8 +8,8 @@ import Move
 import Board
 import Data.Maybe
 
--- Parse a move
 -- Also styled after a friend's code.
+-- | Parse a move
 parseMove :: String -> Maybe Move
 
 -- Set value at row and column to value.
@@ -40,12 +40,12 @@ parseMove ('e':r:c)
 -- No other moves are valid.
 parseMove _ = Nothing
 
--- Turn an Int into a square (or nothing).
--- 0 is turned into Empty.
+-- | Turn an Int into a square (or nothing).
+--   0 is turned into Empty.
 parseSquare :: String -> Maybe Square
 parseSquare = toSquare
 
--- Turn two ints into a Location
+-- | Turn two ints into a Location
 parseLocation :: String -> String -> Maybe Location
 parseLocation = toLocation
 

@@ -7,7 +7,7 @@ module View where
 import Graphics.UI.Gtk
 import GUI
 
--- Initialize Sudoku view
+-- | Initialize Sudoku view
 initSudokuView :: IO Window 
 initSudokuView = do
     
@@ -17,7 +17,7 @@ initSudokuView = do
 
     return (mainWin gui)
 
--- Run GUI window
+-- | Run GUI window.
 runSudokuWindow :: WindowClass window => window -> IO ()
 runSudokuWindow window = do 
     _ <- onDestroy window mainQuit

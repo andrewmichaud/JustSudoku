@@ -25,7 +25,8 @@ import Parse
 import View
 import Flag
 
--- Styled (with permission) after a friend's code.
+-- Styled after a friend's code.
+-- | Control loop for Sudoku game. Receive user input, process it (handling errors) and repeat.
 repl :: (SudokuBoard -> Move -> Either MoveError SudokuBoard) -> (String -> Maybe Move) -> SudokuBoard -> IO ()
 repl f parse initial = do
     
@@ -66,20 +67,20 @@ repl f parse initial = do
             -- The end result is that we have a new value to recurse with repl.
             repl f parse $ either (const initial) id newstate
 
--- Die if we received a QuitError (by using checkError to check the error).
+-- | Die if we received a QuitError (by using checkError to check the error).
 maybeDie :: Either MoveError SudokuBoard -> IO ()
 maybeDie = either checkError (const continue )
      
--- Die if passed a QuitError, otherwise do nothing.
+-- | Die if passed a QuitError, otherwise do nothing.
 checkError :: MoveError -> IO ()
 checkError QuitError = die
 checkError _         = continue
 
--- Try to processs a move.
+-- | Try to process a move.
 move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
 
--- Set value to board. If an error occurs, the value will not be set. If no error occurs, the
--- requested value will be set.
+-- | Set value to board. If an error occurs, the value will not be set. If no error occurs, the
+--   requested value will be set.
 move board (Set row col val)
     | isNothing rowInt   = Left $ NaNError row
     | isNothing colInt   = Left $ NaNError col
@@ -95,7 +96,7 @@ move board (Set row col val)
         valInt   = readMaybe val
         newBoard = setBoardValue board (fromJust location) (fromJust value)
 
--- Erase requested value. If an error occurs, the value will not be erased.
+-- | Erase requested value. If an error occurs, the value will not be erased.
 move board (Erase row col)
     | isNothing rowInt    = Left $ NaNError row
     | isNothing colInt    = Left $ NaNError col
@@ -107,43 +108,50 @@ move board (Erase row col)
         colInt   = readMaybe col
         newBoard = eraseBoardValue board (fromJust location)
 
--- Check if any squares are invalid. "Error" and show invalid squares if any exist. 
--- In any case, the original board will remain.
+-- | Check if any squares are invalid. "Error" and show invalid squares if any exist. 
+--   In any case, the original board will remain.
 move board (Check)
     | not (null invalidSquares) = Left $ InvalidBoardError invalidSquares
     | otherwise                 = Right board
     where
         invalidSquares = checkBoard board
 
--- Reset board
+-- | Reset board.
 move board (Reset) = Right $ resetBoard board
 
--- Unimplemented.
+-- | Quit the game.
 move _ (Quit) = Left QuitError
 
 -- Command-line stuff
+
+-- | Exit successfully.
 exit :: IO ()
 exit = exitSuccess
 
+-- | Exit unsuccessfully.
 die :: IO ()
 die = exitWith $ ExitFailure 1
 
+-- | Usage header, printed when improper command-line arguments are given.
 header :: String
 header = "Usage: sudoku-linux [-hgfV] [file]"
 
+-- | Version number of game.
 versionNum :: String
 versionNum = "0.7.0.0"
 
+-- | Full version string, including version numbert.
 version :: String
 version = "Sudoku-Linux version " ++ versionNum
 
--- Does nothing useful, but returns an IO ().
+-- | Do nothing and return an IO ().
 continue :: IO ()
 continue = return ()
 
--- Parse arguments
+-- | Parse command-line arguments
 commandParse :: ([Flag], [String], [String]) -> IO ([Flag], [String])
 
+-- Processing arguments if there are no errors.
 commandParse (args, fs, [])
     | Help `elem` args    = do
         hPutStrLn stderr (usageInfo header options)
@@ -158,11 +166,12 @@ commandParse (args, fs, [])
         return (nub args, files)
 
 
--- Failing out.    
+-- Failing out
 commandParse (_, _, errs)   = do
     hPutStrLn stderr (concat errs ++ usageInfo header options)
     exitWith (ExitFailure 1)
 
+-- | Main function, runs application.
 main :: IO ()
 main = do
 
