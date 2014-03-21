@@ -8,10 +8,10 @@ import System.Console.GetOpt
 
 -- | Datatype for command-line flags.
 data Flag
-    = Graphical   -- --graphical, -g
-    | Help        -- --help, -h
-    | Version     -- --version, -v
-    | File String -- -f <file>
+    = Graphical   -- ^ Enable graphical mode - --graphical, -g
+    | Help        -- ^ Show help - --help, -h
+    | Version     -- ^ Show version information - version, -V
+    | File String -- ^ Provide a file to load from - --file, -f
     deriving (Eq, Ord, Show)
 
 -- | Describe all allowed command-line options.

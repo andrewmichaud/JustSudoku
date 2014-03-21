@@ -13,11 +13,19 @@ import Control.Monad.Error
 import Board
 
 -- | Types of moves the player can make.
-data Move = Set String String String | Check | Erase String String | Reset | Quit
+data Move = Set String String String | -- ^ Set square, provides coordinates and new value.
+            Check                    | -- ^ Check board.
+            Erase String String      | -- ^ Erase square, provides coordinates.
+            Reset                    | -- ^ Reset board.
+            Quit                       -- ^ Quit game.
 
 -- | Kinds of move errors that can occur.
-data MoveError = NaNError String | OutOfBoundsError Int Int | InvalidValueError Int | 
-                 OtherError String | InvalidBoardError [Location] | QuitError
+data MoveError = NaNError String              | -- ^ Provided value is not a number.
+                 OutOfBoundsError Int Int     | -- ^ Provided location is out of bounds.
+                 InvalidValueError Int        | -- ^ Provided value is invalid.
+                 InvalidBoardError [Location] | -- ^ Returned locations are invalid.
+                 QuitError                    | -- ^ Asked to quit game.
+                 OtherError String              -- ^ Other error not described above.
 
 -- | Error for a MoveError.  This shouldn't happen.
 instance Error MoveError where
