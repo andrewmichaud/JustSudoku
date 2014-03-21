@@ -28,6 +28,11 @@ data GUI = GUI { mainWin :: Window
 -- Initialize GUI type
 initSudokuGUI :: IO GUI
 initSudokuGUI = do
+    
+    -- Do this first or GTK+ gets very sad.
+    _ <- initGUI
+
+    -- Initialize stuff.
     w      <- windowNew
     mBox   <- vBoxNew False 10
     tBox   <- hBoxNew False 10
