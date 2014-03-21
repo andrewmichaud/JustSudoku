@@ -13,15 +13,15 @@ import Graphics.UI.Gtk
 import Util.Other
 
 -- | GUI datatype for a Sudoku window.
-data GUI = GUI { mainWin :: Window
-               , mainBox :: VBox
-               , tableBox :: HBox
-               , table :: Table
-               , menuBar :: MenuBar
-               --, board :: Board
-               , checkItem :: MenuItem
-               , solveItem :: MenuItem
-               , mainMenuItem :: MenuItem
+data GUI = GUI { mainWin :: Window        -- ^ Main window.
+               , mainBox :: VBox          -- ^ VBox holding everything.
+               , tableBox :: HBox         -- ^ HBox holding table.
+               , table :: Table           -- ^ Table holding Sudoku grid entries.
+               , menuBar :: MenuBar       -- ^ Menu bar for application.
+               --, board :: Board         -- ^ Board holding game info. Not yet implemented.
+               , checkItem :: MenuItem    -- ^ Menu item to check board validity.
+               , solveItem :: MenuItem    -- ^ Menu item to submit board as solved.
+               , mainMenuItem :: MenuItem -- ^ Menu item to return to main menu.
              
                }
 

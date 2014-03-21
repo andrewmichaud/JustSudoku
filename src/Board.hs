@@ -28,19 +28,27 @@ import Util.Other
 -- Types declared.
 
 -- | Location on a SudokuGrid - a coordinate pair.
-data Location = Loc Int Int deriving (Eq)
+data Location
+    
+    -- | Create location given row and column.
+    = Loc Int Int deriving (Eq)
 
 -- | Type for Sudoku square value.  Stores value and whether this square was placed at
 --   creation of the board or not.
-data Square = Empty | Val { value :: SqVal
-                          , isOrig  :: Bool
-                          } deriving (Eq)
+data Square = Empty |               -- ^ An empty square. 
+              Val { value :: SqVal  -- ^ Value of square.
+                  , isOrig  :: Bool -- ^ Did this square come with the board?
+                  } deriving (Eq)
 
 -- | Value of a Square, can be 1-9
-data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 deriving (Eq, Ord, Enum, Show)
+data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 -- ^ Constructors for values 1-9.
+             deriving (Eq, Ord, Enum, Show)
 
--- | Type for Sudoku board.  Just a 2D alist of squares.
-data SudokuBoard = SudokuBoard [[Square]] deriving (Eq, Show)
+-- | Type for Sudoku board.  Just a 2D list of squares.
+data SudokuBoard 
+    
+    -- | Create board from 2D list.
+    = SudokuBoard [[Square]] deriving (Eq, Show)
 
 -- Methods visible from this module.
 
@@ -62,11 +70,11 @@ toSquare _ = Nothing
 -- | Create location from two strings specifying coordinates.
 toLocation :: String -> String -> Maybe Location
 toLocation rowStr colStr 
-    | isNothing row || isNothing col = Nothing
-    | otherwise                      = Just $ Loc (fromJust row) (fromJust col)
+    | isNothing r || isNothing c = Nothing
+    | otherwise                  = Just $ Loc (fromJust r) (fromJust c)
     where
-        row = toIndex rowStr
-        col = toIndex colStr
+        r = toIndex rowStr
+        c = toIndex colStr
 
 -- | Create an empty SudokuBoard.
 emptyBoard :: SudokuBoard
@@ -95,27 +103,27 @@ eraseLocation oldSquare
 
 -- | Get the value in a particular square of a Sudoku board.
 getBoardValue :: SudokuBoard -> Location -> Square
-getBoardValue (SudokuBoard board) (Loc row col) = val
+getBoardValue (SudokuBoard board) (Loc r c) = val
     where
-        r   = board !! row
-        val = r !! col
+        curRow = board !! r
+        val    = curRow !! c
 
 -- | Returns a SudokuBoard with the value at the two indices modified.
 --   Original values are not modified.
 setBoardValue :: SudokuBoard -> Location -> Square -> SudokuBoard
-setBoardValue (SudokuBoard board) (Loc row col) newSquare = SudokuBoard newBoard
+setBoardValue (SudokuBoard board) (Loc r c) newSquare = SudokuBoard newBoard
     where
         
         -- Create new row.
-        oldRow   = board !! row
-        oldValue = oldRow !! col
+        oldRow   = board !! r
+        oldValue = oldRow !! c
         newRow   
-            | oldValue == Empty = take col oldRow ++ [newSquare] ++ drop (col + 1) oldRow 
+            | oldValue == Empty = take c oldRow ++ [newSquare] ++ drop (c + 1) oldRow 
             | isOrig oldValue   = oldRow
-            | otherwise         = take col oldRow ++ [newSquare] ++ drop (col + 1) oldRow
+            | otherwise         = take c oldRow ++ [newSquare] ++ drop (c + 1) oldRow
 
 	-- Create new board.
-        newBoard  = take row board ++ [newRow] ++ drop (row + 1) board
+        newBoard  = take r board ++ [newRow] ++ drop (r + 1) board
         
 -- | Erase square of a SudokuBoard if it isn't original.
 eraseBoardValue :: SudokuBoard -> Location -> SudokuBoard
@@ -174,7 +182,7 @@ instance Show Square where
 
 -- | Show a location as a tuple of coordinates.
 instance Show Location where
-    show (Loc row col) = show (row, col)
+    show (Loc r c) = show (r, c)
 
 -- | Turn an int into an index value.
 toIndex :: String -> Maybe Int
