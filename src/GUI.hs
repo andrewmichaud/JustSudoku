@@ -1,6 +1,20 @@
--- Andrew Michaud
 -- 03/09/14
--- Stuff for GUI for Sudoku project
+
+{-|
+
+Module      : GUI
+Description : Methods for creating a Sudoku GTK+ GUI.
+Copyright   : (c) Andrew Michaud, 2014
+License     : Apache 2.0
+Maintainer  : andrewjmichaud@gmail.com
+Stability   : experimental
+
+This module contains a datatype for a Sudoku application GUI, which includes everything I think
+is necessary for a reasonable Sudoku application. It also includes a method for initializing
+a GUI, a method for binding all of the elements together, and exports the mainWin field so
+code importing this module can actually use the GUI.
+
+-}
 
 module GUI ( GUI
            , initSudokuGUI

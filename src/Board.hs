@@ -1,6 +1,18 @@
--- Andrew Michaud
 -- 02/05/14
--- Data and other definitions needed for Sudoku.
+
+{-|
+
+Module      : Board
+Description : Methods and datatypes for creating and manipulating Sudoku Boards.
+Copyright   : (c) Andrew Michaud, 2014
+License     : Apache 2.0
+Maintainer  : andrewjmichaud@gmail.com
+Stability   : experimental
+
+This module includes the methods to create a SudokuBoard, the types used to construct one, and
+all of the methods used to interact with one once it's created. 
+
+-}
 
 module Board 
 ( SqVal

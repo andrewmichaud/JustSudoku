@@ -1,6 +1,29 @@
--- Andrew Michaud
 -- 2/11/14
--- Main controller/logic for Sudoku project
+
+{-|
+
+Module      : Main
+Description :  Handles user input and controlling everything else.
+Copyright   : (c) Andrew Michaud, 2014
+License     : Apache 2.0
+Maintainer  : andrewjmichaud@gmail.com
+Stability   : experimental
+
+This module provides several things.  First, it provides a control loop for receiving and 
+interpreting player input.  This loop takes input, attempts to parse it (using Parse), gets
+the Move (using Move) the player intended, applies it, and either loops with the new state
+of the board after the move (if the move was valid), or loops with the old state of the board
+(if there was an error).  It also shows the board on each iteration and kills the program if
+a QuitError comes up (if the player asked to quit).  
+
+There are also functions for each possible move, to actually apply the player's moves.  If the
+moves fail for any reason, these functions return errors instead of valid new boards.
+
+The rest of the module is code to handle command line arguments, some strings holding info
+about the program, and the actual Main function.  The main function parses arguments, prints
+some stuff out, and kickstarts the control loop.
+
+-}
 
 module Main where
 
@@ -79,8 +102,8 @@ checkError _         = continue
 -- | Try to process a move.
 move :: SudokuBoard -> Move -> Either MoveError SudokuBoard
 
--- | Set value to board. If an error occurs, the value will not be set. If no error occurs, the
---   requested value will be set.
+-- Set value to board. If an error occurs, the value will not be set. If no error occurs, the
+-- requested value will be set.
 move board (Set row col val)
     | isNothing rowInt   = Left $ NaNError row
     | isNothing colInt   = Left $ NaNError col
@@ -96,7 +119,7 @@ move board (Set row col val)
         valInt   = readMaybe val
         newBoard = setBoardValue board (fromJust location) (fromJust value)
 
--- | Erase requested value. If an error occurs, the value will not be erased.
+-- Erase requested value. If an error occurs, the value will not be erased.
 move board (Erase row col)
     | isNothing rowInt    = Left $ NaNError row
     | isNothing colInt    = Left $ NaNError col
@@ -108,18 +131,18 @@ move board (Erase row col)
         colInt   = readMaybe col
         newBoard = eraseBoardValue board (fromJust location)
 
--- | Check if any squares are invalid. "Error" and show invalid squares if any exist. 
---   In any case, the original board will remain.
+-- Check if any squares are invalid. "Error" and show invalid squares if any exist. 
+-- In any case, the original board will remain.
 move board (Check)
     | not (null invalidSquares) = Left $ InvalidBoardError invalidSquares
     | otherwise                 = Right board
     where
         invalidSquares = checkBoard board
 
--- | Reset board.
+-- Reset board.
 move board (Reset) = Right $ resetBoard board
 
--- | Quit the game.
+-- Quit the game.
 move _ (Quit) = Left QuitError
 
 -- Command-line stuff
