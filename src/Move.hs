@@ -16,8 +16,10 @@ of the results of their moves.
 
 -}
 
-module Move
-( Move(..)
+module Move (
+  
+-- * Classes
+  Move(..)
 , MoveError(..)
 ) where
 

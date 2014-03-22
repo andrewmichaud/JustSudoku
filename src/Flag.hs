@@ -14,7 +14,14 @@ type, and descriptions and long and short option flags are provided as well.
 
 -}
 
-module Flag where
+module Flag (
+  
+-- * Classes
+  Flag(..)
+
+-- * Option Descriptions
+, options
+) where
 
 import System.Console.GetOpt
 

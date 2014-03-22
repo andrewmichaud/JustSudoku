@@ -21,7 +21,7 @@ module View where
 import Graphics.UI.Gtk
 import GUI
 
--- | Initialize Sudoku view
+-- | Initialize Sudoku view.
 initSudokuView :: IO Window 
 initSudokuView = do
     
