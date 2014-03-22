@@ -2,7 +2,7 @@
 
 {-|
 
-Module      : Parse
+Module      : Control.Parse
 Description : Methods for parsing moves and for creating locations and squares.
 Copyright   : (c) Andrew Michaud, 2014
 License     : Apache 2.0
@@ -17,10 +17,10 @@ input, so they're rather strict on what they accept as valid input.
 
 -}
 
-module Parse where
+module Sudoku.Control.Parse where
 
-import Move
-import Board
+import Sudoku.Control.Move
+import Sudoku.Data.Board
 import Data.Maybe
 
 -- Also styled after a friend's code.

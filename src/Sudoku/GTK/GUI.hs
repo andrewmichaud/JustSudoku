@@ -16,7 +16,7 @@ code importing this module can actually use the GUI.
 
 -}
 
-module GUI (
+module Sudoku.GTK.GUI (
 
 -- * Classes 
   GUI

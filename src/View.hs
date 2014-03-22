@@ -19,7 +19,7 @@ from the controller once it has started, so this approach might need to be chang
 module View where
 
 import Graphics.UI.Gtk
-import GUI
+import Sudoku.GTK.GUI
 
 -- | Initialize Sudoku view.
 initSudokuView :: IO Window 
