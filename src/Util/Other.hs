@@ -1,6 +1,20 @@
--- Andrew Michaud
 -- 03/09/14
--- Utility functions.
+
+{-|
+
+Module      : Util.Other
+Description : Hopefully useful utility functions.
+Copyright   : (c) Andrew Michaud, 2014
+License     : Apache 2.0
+Maintainer  : andrewjmichaud@gmail.com
+Stability   : experimental
+
+This module houses any methods that don't quite fit in anywhere else (or are generic enough to 
+deserve placement in a separate module).  Currently, there are two methods for incrementing 
+tuples, two methods for generating lists of IO objects, and a method for converting a string
+into an integer conditionally.
+
+-}
 
 module Util.Other where
 

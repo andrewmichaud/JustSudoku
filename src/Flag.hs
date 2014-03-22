@@ -1,6 +1,18 @@
--- Andrew Michaud
 -- 03/08/14
--- Command line flags for Sudoku game.
+
+{-|
+
+Module      : Flag
+Description : Defines flags and option descriptions.
+Copyright   : (c) Andrew Michaud, 2014
+License     : Apache 2.0
+Maintainer  : andrewjmichaud@gmail.com
+Stability   : experimental
+
+This module describes the flags permitted for the Sudoku application.  The flags exist as a data
+type, and descriptions and long and short option flags are provided as well.
+
+-}
 
 module Flag where
 
