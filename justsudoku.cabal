@@ -2,10 +2,10 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                justsudoku
-version:             0.8.0.0
-synopsis:            GTK+ Linux Sudoku game
+version:             0.8.1.0
+synopsis:            GTK+/Terminal Sudoku app
 -- description:         
-homepage:            https://github.com/andrewmichaud/sudoku-linux
+homepage:            https://github.com/andrewmichaud/JustSudoku
 license:             Apache-2.0
 license-file:        LICENSE
 author:              Andrew Michaud
@@ -17,11 +17,11 @@ cabal-version:       >=1.8
 
 source-repository head
     type:     git
-    location: git://github.com/andrewmichaud/sudoku-linux.git
+    location: git://github.com/andrewmichaud/JustSudoku.git
 
 source-repository this
     type:     git
-    location: git://github.com/andrewmichaud/sudoku-linux.git
+    location: git://github.com/andrewmichaud/JustSudoku.git
     branch:   develop
     tag:      0.7.0.0
 

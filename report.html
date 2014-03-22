@@ -147,12 +147,12 @@ document.body.className = "script";
 
 <p><a class="all" href="javascript:show('')">All hints</a></p>
 <ul>
-<li><a id="hint0" href="javascript:show('hint0')">Warning: Redundant $ (1)</a></li>
+<li><a id="hint0" href="javascript:show('hint0')">Warning: Redundant bracket (1)</a></li>
 </ul>
 
 <p><a class="all" href="javascript:show('')">All files</a></p>
 <ul>
-<li><a id="file0" href="javascript:show('file0')">src/Util/Other.hs (1)</a></li>
+<li><a id="file0" href="javascript:show('file0')">src/Sudoku/GTK/GUI.hs (1)</a></li>
 </ul>
 
 </div>
@@ -164,11 +164,11 @@ v1.8.53
 </p>
 
 <div class="hint0 file0">
-src/Util/Other.hs:28:12: Warning: Redundant $<br/>
+src/Sudoku/GTK/GUI.hs:101:25: Warning: Redundant bracket<br/>
 Found<br/>
-<pre><span class='hs-definition'>replicateM</span> <span class='hs-layout'>(</span><span class='hs-varid'>count</span> <span class='hs-comment'>-</span> <span class='hs-num'>1</span><span class='hs-layout'>)</span> <span class='hs-varop'>$</span> <span class='hs-varid'>func</span></pre>
+<pre><span class='hs-definition'>containerChild</span> <span class='hs-conop'>:=</span> <span class='hs-layout'>(</span><span class='hs-varid'>mainBox</span> <span class='hs-varid'>gui</span><span class='hs-layout'>)</span></pre>
 Why not<br/>
-<pre><span class='hs-definition'>replicateM</span> <span class='hs-layout'>(</span><span class='hs-varid'>count</span> <span class='hs-comment'>-</span> <span class='hs-num'>1</span><span class='hs-layout'>)</span> <span class='hs-varid'>func</span></pre>
+<pre><span class='hs-definition'>containerChild</span> <span class='hs-conop'>:=</span> <span class='hs-varid'>mainBox</span> <span class='hs-varid'>gui</span></pre>
 
 </div>
 

@@ -97,8 +97,8 @@ bindGUI gui = do
     -- Set window parameters.
     set (mainWin gui) [ windowDefaultWidth   := 200
                       , windowDefaultHeight  := 200
-                      , windowTitle          := "Sudoku Linux"
-                      , containerChild       := (mainBox gui)
+                      , windowTitle          := "Just Sudoku"
+                      , containerChild       := mainBox gui
                       , containerBorderWidth := 10]
     
     -- Pack some other stuff.           
