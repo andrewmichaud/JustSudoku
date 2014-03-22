@@ -25,7 +25,26 @@ some stuff out, and kickstarts the control loop.
 
 -}
 
-module Main where
+module Main (
+
+-- * Control
+  repl
+, move
+
+-- * Command-Line Processing
+, commandParse
+, exit
+, die
+, continue
+
+-- * Program Information.
+, header
+, version
+
+-- * Main
+, main
+
+) where
 
 -- For Read.Maybe
 import Text.Read
@@ -147,11 +166,11 @@ move _ (Quit) = Left QuitError
 
 -- Command-line stuff
 
--- | Exit successfully.
+-- | Exit and indicate success.
 exit :: IO ()
 exit = exitSuccess
 
--- | Exit unsuccessfully.
+-- | Exit and indicate failure.
 die :: IO ()
 die = exitWith $ ExitFailure 1
 

@@ -16,10 +16,17 @@ code importing this module can actually use the GUI.
 
 -}
 
-module GUI ( GUI
-           , initSudokuGUI
-           , mainWin
-           ) where
+module GUI (
+
+-- * Classes 
+  GUI
+
+-- * Constructors
+, initSudokuGUI
+
+-- * Exported Record Entries
+, mainWin
+) where
 
 import Graphics.UI.Gtk
 

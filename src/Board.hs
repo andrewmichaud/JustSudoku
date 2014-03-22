@@ -14,20 +14,28 @@ all of the methods used to interact with one once it's created.
 
 -}
 
-module Board 
-( SqVal
+module Board ( 
+-- * Classes
+  SqVal
 , Square
 , SudokuBoard
 , Location
+
+-- * Location, Square Generation
 , toLocation
 , toSquare
+
+-- * Board Generation
 , emptyBoard
 , attemptLoad
+
+-- * Printing
 , prettyPrint
+
+-- * Board Modification
 , getBoardValue
 , setBoardValue
 , eraseBoardValue
---, isFilled
 , resetBoard
 , checkBoard
 ) where

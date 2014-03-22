@@ -16,7 +16,20 @@ into an integer conditionally.
 
 -}
 
-module Util.Other where
+module Util.Other (
+
+-- * Tuples
+  addToTupleIf
+, incrementTupleIf
+
+-- * IO
+, getIORow
+, getIOGrid
+
+-- * String
+, sToIntRange
+        
+) where
 
 import Control.Monad(replicateM)
 import Text.Read(readMaybe)
