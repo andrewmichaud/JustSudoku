@@ -176,15 +176,15 @@ die = exitWith $ ExitFailure 1
 
 -- | Usage header, printed when improper command-line arguments are given.
 header :: String
-header = "Usage: sudoku-linux [-hgfV] [file]"
+header = "Usage: justsudoku [-hgfV] [file]"
 
 -- | Version number of game.
 versionNum :: String
-versionNum = "0.7.0.0"
+versionNum = "0.8.1.0"
 
 -- | Full version string, including version numbert.
 version :: String
-version = "Sudoku-Linux version " ++ versionNum
+version = "justsudoku version " ++ versionNum
 
 -- | Do nothing and return an IO ().
 continue :: IO ()
