@@ -2,7 +2,7 @@
 
 {-|
 
-Module      : Move
+Module      : Control.Move
 Description : Defines valid Moves and MoveErrors for Sudoku application.
 Copyright   : (c) Andrew Michaud, 2014
 License     : Apache 2.0
@@ -16,7 +16,7 @@ of the results of their moves.
 
 -}
 
-module Move (
+module Sudoku.Control.Move (
   
 -- * Classes
   Move(..)
@@ -26,7 +26,7 @@ module Move (
 -- For custom errors.
 import Control.Monad.Error
 
-import Board
+import Sudoku.Data.Board
 
 -- | Types of moves the player can make.
 data Move = Set String String String | -- ^ Set square, provides coordinates and new value.

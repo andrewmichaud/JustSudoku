@@ -2,7 +2,7 @@
 
 {-|
 
-Module      : Flag
+Module      : Control.Flag
 Description : Defines flags and option descriptions.
 Copyright   : (c) Andrew Michaud, 2014
 License     : Apache 2.0
@@ -14,7 +14,7 @@ type, and descriptions and long and short option flags are provided as well.
 
 -}
 
-module Flag (
+module Sudoku.Control.Flag (
   
 -- * Classes
   Flag(..)

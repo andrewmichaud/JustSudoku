@@ -61,11 +61,11 @@ import Data.Maybe
 import Data.List(nub)
 
 -- Sudoku-related things
-import Board
-import Move
-import Parse
+import Sudoku.Data.Board
+import Sudoku.Control.Move
+import Sudoku.Control.Parse
+import Sudoku.Control.Flag
 import View
-import Flag
 
 -- Styled after a friend's code.
 -- | Control loop for Sudoku game. Receive user input, process it (handling errors) and repeat.

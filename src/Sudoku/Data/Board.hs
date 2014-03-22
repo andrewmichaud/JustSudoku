@@ -14,7 +14,7 @@ all of the methods used to interact with one once it's created.
 
 -}
 
-module Board ( 
+module Sudoku.Data.Board ( 
 -- * Classes
   SqVal
 , Square
