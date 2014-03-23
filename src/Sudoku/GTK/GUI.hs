@@ -137,12 +137,14 @@ packAllEntries t entryArray cols rows =
 -- | Set up one entry with value and original status.
 setOne :: SudokuBoard -> Location -> Entry -> IO ()
 setOne b loc entry
-    | isEmpty square = return ()
+    | isEmpty square = do
+        widgetModifyFg entry StateNormal $ Color 65535 65535 65535
     | otherwise      = do
         
         -- Fill entries and make them uneditable.
-        entrySetText entry squareStr
+        entrySetText entry $ show square
         editableSetEditable entry False
+        widgetModifyFg entry StateNormal $ Color 0 0 0
     where square    = getBoardValue b loc
 
 -- | Set up a list of entries.
