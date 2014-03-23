@@ -30,25 +30,27 @@ module Sudoku.GTK.GUI (
 
 import Graphics.UI.Gtk
 
+import Sudoku.Data.Board
+
 -- Importing utilities.
 import Util.Other
 
 -- | GUI datatype for a Sudoku window.
-data GUI = GUI { mainWin :: Window        -- ^ Main window.
-               , mainBox :: VBox          -- ^ VBox holding everything.
-               , tableBox :: HBox         -- ^ HBox holding table.
-               , table :: Table           -- ^ Table holding Sudoku grid entries.
-               , menuBar :: MenuBar       -- ^ Menu bar for application.
-               --, board :: Board         -- ^ Board holding game info. Not yet implemented.
-               , checkItem :: MenuItem    -- ^ Menu item to check board validity.
-               , solveItem :: MenuItem    -- ^ Menu item to submit board as solved.
-               , mainMenuItem :: MenuItem -- ^ Menu item to return to main menu.
+data GUI = GUI { mainWin      :: Window      -- ^ Main window.
+               , mainBox      :: VBox        -- ^ VBox holding everything.
+               , tableBox     :: HBox        -- ^ HBox holding table.
+               , table        :: Table       -- ^ Table holding Sudoku grid entries.
+               , menuBar      :: MenuBar     -- ^ Menu bar for application.
+               , board        :: SudokuBoard -- ^ Board holding game info.
+               , checkItem    :: MenuItem    -- ^ Menu item to check board validity.
+               , solveItem    :: MenuItem    -- ^ Menu item to submit board as solved.
+               , mainMenuItem :: MenuItem    -- ^ Menu item to return to main menu.
              
                }
 
 -- | Initialize a Sudoku GUI and setup GTK+.
-initSudokuGUI :: IO GUI
-initSudokuGUI = do
+initSudokuGUI :: SudokuBoard -> IO GUI
+initSudokuGUI sb = do
     
     -- Do this first or GTK+ gets very sad.
     _ <- initGUI
@@ -68,16 +70,18 @@ initSudokuGUI = do
                   , tableBox     = tBox
                   , table        = t
                   , menuBar      = mBar
+                  , board        = sb
                   , checkItem    = cItem
                   , solveItem    = sItem
                   , mainMenuItem = mmItem
                   }
     
-    bindGUI gui
+    bindGUI sb gui
 
 -- | Bind GUI elements to the window.
-bindGUI :: GUI -> IO GUI
-bindGUI gui = do    
+bindGUI :: SudokuBoard -> GUI -> IO GUI
+bindGUI sb gui = do    
+    
     -- Add items to menu.
     menuShellAppend (menuBar gui) (mainMenuItem gui)
     menuShellAppend (menuBar gui) (checkItem gui)
@@ -85,6 +89,10 @@ bindGUI gui = do
 
     -- Grid fields.
     entryGrid <- getIOGrid 9 entryNew
+
+    -- Fill fields.
+    let locs = [[tupleToLocation (r, c) | c <- [0..8]] | r <- [0..8]]
+    setEntryGrid sb locs entryGrid
 
     -- Apply some functions to the entries.
     _ <- addValidateFunction entryGrid 
@@ -125,6 +133,33 @@ packAllEntries :: (TableClass self) => self -> [[Entry]] -> [[(Int, Int)]] -> [[
                                             -> IO [[()]]
 packAllEntries t entryArray cols rows =
     sequence $ zipWith3 (packEntryList t) entryArray cols rows
+
+-- | Set up one entry with value and original status.
+setOne :: SudokuBoard -> Location -> Entry -> IO ()
+setOne b loc entry
+    | isEmpty square = return ()
+    | otherwise      = do
+        
+        -- Fill entries and make them uneditable.
+        entrySetText entry squareStr
+        editableSetEditable entry False
+    where square    = getBoardValue b loc
+
+-- | Set up a list of entries.
+setEntryList :: SudokuBoard -> [Location] -> [Entry] -> IO ()
+setEntryList b locList entryList
+    | length entryList == 1 = setOne b (head locList) (head entryList)
+    | otherwise             = do
+        setOne b (head locList) (head entryList)
+        setEntryList b (tail locList) (tail entryList)
+        
+-- | Set up a grid of entries.
+setEntryGrid :: SudokuBoard -> [[Location]] -> [[Entry]] -> IO ()
+setEntryGrid b locGrid entryGrid
+    | length entryGrid == 1 = setEntryList b (head locGrid) (head entryGrid)
+    | otherwise             = do
+        setEntryList b (head locGrid) (head entryGrid)
+        setEntryGrid b (tail locGrid) (tail entryGrid)
 
 -- | Checks whether an entry is between 1 and 9 inclusive and discards it otherwise.
 --   Currently uses a hardcoded value, but should eventually reset to an "old" value.

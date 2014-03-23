@@ -18,11 +18,17 @@ module Sudoku.Data.Board (
 -- * Classes
   SqVal
 , Square
+, value
+, isOrig
 , SudokuBoard
 , Location
 
+-- * Methods
+, isEmpty
+
 -- * Location, Square Generation
 , toLocation
+, tupleToLocation
 , toSquare
 
 -- * Board Generation
@@ -72,6 +78,11 @@ data SudokuBoard
 
 -- Methods visible from this module.
 
+-- | Return whether Square is Empty or not.
+isEmpty :: Square -> Bool
+isEmpty Empty = True
+isEmpty _     = False
+
 -- | Convert Int to Square (or fail and return Nothing).
 toSquare :: String -> Maybe Square
 toSquare "0" = Just Empty
@@ -95,6 +106,10 @@ toLocation rowStr colStr
     where
         r = toIndex rowStr
         c = toIndex colStr
+
+-- | Convert tuple of ints to Location.
+tupleToLocation :: (Int, Int) -> Location
+tupleToLocation (r, c) = Loc r c
 
 -- | Create an empty SudokuBoard.
 emptyBoard :: SudokuBoard

@@ -20,14 +20,15 @@ module View where
 
 import Graphics.UI.Gtk
 import Sudoku.GTK.GUI
+import Sudoku.Data.Board
 
 -- | Initialize Sudoku view.
-initSudokuView :: IO Window 
-initSudokuView = do
+initSudokuView :: SudokuBoard -> IO Window 
+initSudokuView board = do
     
     -- Init GUI and window handle.
     -- discarding string that initGUI returns for some reason.
-    gui       <- initSudokuGUI
+    gui       <- initSudokuGUI board
 
     return (mainWin gui)
 

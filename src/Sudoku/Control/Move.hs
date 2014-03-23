@@ -50,10 +50,10 @@ instance Error MoveError where
 
 -- | What each error shows when it occurs.
 instance Show MoveError where
-    show (NaNError value)            = "Value " ++ value ++ " is not a number."
+    show (NaNError val)            = "Value " ++ val ++ " is not a number."
     show (OutOfBoundsError row col)  = "Square (" ++ show row ++ ", " ++ show col 
                                                  ++ " is out of bounds."
-    show (InvalidValueError value)   = "Value " ++ show value ++ " is invalid."
+    show (InvalidValueError val)   = "Value " ++ show val ++ " is invalid."
     show (InvalidBoardError squares) = "Board is invalid. Invalid squares: " ++ show squares
     show (OtherError string)         = "General error: " ++ string
     show QuitError                   = "Asked or required to quit!"
