@@ -128,15 +128,15 @@ move board (Set row col val)
     | isNothing colInt   = Left $ NaNError col
     | isNothing valInt   = Left $ NaNError val
     | isNothing location = Left $ OutOfBoundsError (fromJust rowInt) (fromJust colInt)
-    | isNothing value    = Left $ InvalidValueError (fromJust valInt)
+    | isNothing newVal   = Left $ InvalidValueError (fromJust valInt)
     | otherwise          = Right newBoard
     where
         location = parseLocation row col
-        value    = parseSquare val
+        newVal   = parseSquare val
         rowInt   = readMaybe row
         colInt   = readMaybe col
         valInt   = readMaybe val
-        newBoard = setBoardValue board (fromJust location) (fromJust value)
+        newBoard = setBoardValue board (fromJust location) (fromJust newVal)
 
 -- Erase requested value. If an error occurs, the value will not be erased.
 move board (Erase row col)
@@ -226,6 +226,7 @@ main = do
     
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"
+    let board = attemptLoad contents
 
     -- Process arguments.
     if Graphical `elem` args
@@ -233,12 +234,11 @@ main = do
         -- Graphical branch.
         then do
             -- Initialize and retrieve GUI.
-            window <- initSudokuView
+            window <- initSudokuView board
             runSudokuWindow window
 
         -- Command line branch.
         else do
-            let board = attemptLoad contents
     
             -- Game header.
             putStrLn $ "This is Sudoku-Linux version " ++ versionNum ++ " \n"
