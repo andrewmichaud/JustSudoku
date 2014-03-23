@@ -1,4 +1,4 @@
-sudoku-linux
+Just Sudoku
 ============
 
 This is a project to make a playable Sudoko game in Haskell, using the GTK+ libary.
