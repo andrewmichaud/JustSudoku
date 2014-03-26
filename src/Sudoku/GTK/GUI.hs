@@ -29,6 +29,7 @@ module Sudoku.GTK.GUI (
 ) where
 
 import Graphics.UI.Gtk
+import Data.IORef
 
 import Sudoku.Data.Board
 
@@ -100,7 +101,7 @@ bindGUI sb gui = do
     _ <- applyEntriesOneArg entryGrid entrySetWidthChars 4 
 
     -- Pack entries.
-    _ <- packAllEntries (table gui) entryGrid colCoords rowCoords
+    _ <- packAll (table gui) entryGrid colCoords rowCoords
 
     -- Set window parameters.
     set (mainWin gui) [ windowDefaultWidth   := 200
@@ -118,33 +119,23 @@ bindGUI sb gui = do
 
 -- Helper functions. Not exported.
 
--- | Pack an entry given the entry, a table to pack in, and coordinates.
-packEntry :: (TableClass self) => self -> Entry -> (Int, Int) -> (Int, Int) -> IO ()
-packEntry t entry (colT, colB) (rowL, rowR) =
-    tableAttach t entry colT colB rowL rowR [Shrink] [Shrink] 1 1
-
--- | Pack a 1D list of widgets into a table with the provided indices.
-packEntryList :: (TableClass self) => self -> [Entry] -> [(Int, Int)] -> [(Int, Int)] -> IO [()]
-packEntryList t entryArray cols rows =
-    sequence $ zipWith3 (packEntry t) entryArray cols rows
-
--- | Pack a 2D list of entries with the provided indices.
-packAllEntries :: (TableClass self) => self -> [[Entry]] -> [[(Int, Int)]] -> [[(Int, Int)]] 
-                                            -> IO [[()]]
-packAllEntries t entryArray cols rows =
-    sequence $ zipWith3 (packEntryList t) entryArray cols rows
+-- | Pack a 2D list of widgets into a table with the provided indices.
+packAll :: (TableClass self, WidgetClass w) => self -> [[w]]  -> [[(Int, Int)]] ->
+                                                      [[(Int, Int)]] -> IO [[()]]
+packAll tab wArray cols rows =
+    sequence $ zipWith3 (packList tab) wArray cols rows
+    where packList wTab wArr c r      = sequence $ zipWith3 (pack wTab) wArr c r
+          pack wTab w (c, cs) (r, rs) = tableAttachDefaults wTab w c cs r rs
 
 -- | Set up one entry with value and original status.
 setOne :: SudokuBoard -> Location -> Entry -> IO ()
 setOne b loc entry
-    | isEmpty square = do
-        widgetModifyFg entry StateNormal $ Color 65535 65535 65535
+    | isEmpty square = return ()
     | otherwise      = do
         
         -- Fill entries and make them uneditable.
         entrySetText entry $ show square
-        editableSetEditable entry False
-        widgetModifyFg entry StateNormal $ Color 0 0 0
+        widgetSetSensitivity entry False
     where square    = getBoardValue b loc
 
 -- | Set up a list of entries.
@@ -163,15 +154,34 @@ setEntryGrid b locGrid entryGrid
         setEntryList b (head locGrid) (head entryGrid)
         setEntryGrid b (tail locGrid) (tail entryGrid)
 
--- | Checks whether an entry is between 1 and 9 inclusive and discards it otherwise.
---   Currently uses a hardcoded value, but should eventually reset to an "old" value.
-validateEntry :: Entry -> IO ()
-validateEntry e = do
-    text <- entryGetText e
-    entrySetText e $ newval text
-    where newval s
-            | s == "" || s == " " = ""
-            | otherwise           = maybe "1" show (sToIntRange s [1..9])
+-- | Add validate function to all entries.
+addValidateFunction :: [[Entry]] -> IO [[()]]
+addValidateFunction = mapM addOneRow
+    where addOneRow      = mapM oneEntry
+            
+          oneEntry entry = do
+            
+            -- GTK black magic.
+            idRef  <- newIORef undefined
+            textId <- onInsertText entry $ \str pos -> do
+                readId <- readIORef idRef
+                
+                -- Get old value.
+                oldVal <- editableGetChars entry 0 1
+                
+                signalBlock readId
+                pos'   <- editableInsertText entry (check oldVal str) pos
+                signalUnblock readId
+                stopInsertText readId
+                
+                -- Return new position.
+                return pos'
+            writeIORef idRef textId
+
+          -- Check that new value is a valid Sudoku value.
+          check old new
+            | new == " " || new == "" = ""
+            | otherwise           = maybe old show $ sToIntRange new [1..9]
 
 -- | Generate one row of Sudoku coords to be used for either columns or rows.
 sudokuCoords :: [(Int, Int)]
@@ -187,11 +197,6 @@ colCoords = replicate 9 sudokuCoords :: [[(Int, Int)]]
 -- | Generate row coordinates for a 9x9 Sudoku grid.
 rowCoords :: [[(Int, Int)]]
 rowCoords = map (replicate 9) sudokuCoords :: [[(Int, Int)]] 
-
--- | Add validate function to all entries.
-addValidateFunction :: [[Entry]] -> IO [[ConnectId Entry]]
-addValidateFunction = mapM addOneRow
-    where addOneRow = mapM (\entry -> onEditableChanged entry (validateEntry entry))
 
 -- | Apply a function that takes an Entry and one argument to all entries.
 --   Takes a list of lists of entries, an argument, and the function.
