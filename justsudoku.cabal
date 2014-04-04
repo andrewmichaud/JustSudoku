@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                justsudoku
-version:             0.8.1.0
+version:             0.9.0.0
 synopsis:            GTK+/Terminal Sudoku app
 -- description:         
 homepage:            https://github.com/andrewmichaud/JustSudoku
@@ -23,15 +23,16 @@ source-repository this
     type:     git
     location: git://github.com/andrewmichaud/JustSudoku.git
     branch:   develop
-    tag:      0.7.0.0
+    tag:      0.9.0.0
 
 executable justsudoku
     main-is:             Controller.hs       
     other-modules:       Sudoku.Data.Board 
         Sudoku.Control.Move Sudoku.Control.Flag Sudoku.Control.Parse 
-        Sudoku.GTK.GUI 
+        Sudoku.GTK.GUI
+        Sudoku.Generation.Solve 
         View 
         Util.Other
     ghc-options:         -debug -Wall -O3
-    build-depends:       base ==4.6.*, mtl ==2.1.*, gtk ==0.12.4
+    build-depends:       base ==4.6.*, mtl ==2.1.*, gtk ==0.12.4, random ==1.0.1.*
     hs-source-dirs:      src 

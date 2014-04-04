@@ -28,11 +28,21 @@ module Util.Other (
 
 -- * String
 , sToIntRange
-        
+
+-- * List
+, randomElem
+, getElem
+, setElem
+, setElemTuple
+
 ) where
 
 import Control.Monad(replicateM)
 import Text.Read(readMaybe)
+
+import System.Random(randomRs, mkStdGen)
+
+import Debug.Trace
 
 -- For tuples
 
@@ -73,6 +83,30 @@ sToIntRange :: String -> [Int] -> Maybe Int
 sToIntRange str range
     | val `elem` mRange = val
     | otherwise         = Nothing
-    where val = readMaybe str
+    where val    = readMaybe str
           mRange = map Just range
+
+-- For Lists.
+
+-- | Given a list, return a random element from that list.
+randomElem :: (Show a) => [a] -> a
+randomElem list = randElem
+    where randoms  = randomRs (0, length list - 1) (mkStdGen $ length list) -- 'random' seed.
+          index    = head randoms
+          randElem = list !! index
+
+-- | Get the value at the provided indices from a 2D list.
+getElem :: [[a]] -> (Int, Int) -> a
+getElem list (r, c) = (list !! r) !! c
+
+-- | Set the value at the provided indicies in a 2D list.
+setElem :: [[a]] -> (Int, Int) -> a -> [[a]]
+setElem list (r, c) val = newList
+    where oldRow  = list !! r
+          newRow  = take c oldRow ++ [val]    ++ drop (c + 1) oldRow
+          newList = take r list   ++ [newRow] ++ drop (r + 1) list
+
+-- | Identitical to setElem, but take the value and indices as a tuple.
+setElemTuple :: (Show a) => [[a]] -> ((Int, Int), a) -> [[a]]
+setElemTuple list ((r, c), val) = setElem list (r, c) val
 

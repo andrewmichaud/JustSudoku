@@ -180,7 +180,7 @@ header = "Usage: justsudoku [-hgfV] [file]"
 
 -- | Version number of game.
 versionNum :: String
-versionNum = "0.8.1.0"
+versionNum = "0.9.0.0"
 
 -- | Full version string, including version numbert.
 version :: String

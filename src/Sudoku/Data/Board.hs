@@ -29,7 +29,9 @@ module Sudoku.Data.Board (
 -- * Location, Square Generation
 , toLocation
 , tupleToLocation
+, locToTuple
 , toSquare
+, intToSquare
 
 -- * Board Generation
 , emptyBoard
@@ -44,6 +46,10 @@ module Sudoku.Data.Board (
 , eraseBoardValue
 , resetBoard
 , checkBoard
+
+-- * Other
+, subgridHelper
+
 ) where
 
 import Data.Maybe
@@ -83,7 +89,7 @@ isEmpty :: Square -> Bool
 isEmpty Empty = True
 isEmpty _     = False
 
--- | Convert Int to Square (or fail and return Nothing).
+-- | Convert String to Square (or fail and return Nothing).
 toSquare :: String -> Maybe Square
 toSquare "0" = Just Empty
 toSquare "1" = Just Val {value = V1, isOrig = False}
@@ -98,6 +104,10 @@ toSquare "9" = Just Val {value = V9, isOrig = False}
 toSquare "_" = Just Empty
 toSquare _ = Nothing
 
+-- | Convert Int to Square
+intToSquare :: Int -> Maybe Square
+intToSquare i = toSquare $ show i
+
 -- | Create location from two strings specifying coordinates.
 toLocation :: String -> String -> Maybe Location
 toLocation rowStr colStr 
@@ -106,6 +116,10 @@ toLocation rowStr colStr
     where
         r = toIndex rowStr
         c = toIndex colStr
+
+-- | Convert Location to tuple of ints.
+locToTuple :: Location -> (Int, Int)
+locToTuple (Loc r c) = (r, c)
 
 -- | Convert tuple of ints to Location.
 tupleToLocation :: (Int, Int) -> Location
