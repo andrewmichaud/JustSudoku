@@ -47,7 +47,6 @@ initSolver = newData
           bads      = replicate 9 (replicate 9 [])
           possibles = replicate 9 (replicate 9 (map (fromJust . intToSquare) [1..9]))
 
-
 -- | Given a grid with any number of empty squares, solve it.
 solve :: SolverData -> SolverData
 solve sdata
@@ -59,7 +58,7 @@ solve sdata
     | otherwise = newdata
 
     -- Choose a random empty location.
-    where randLoc   = randomElem $ emptyLocs sdata
+    where randLoc   = head $ emptyLocs sdata
           randTup   = locToTuple randLoc
 
           -- Get possible values for this loc.
@@ -68,7 +67,7 @@ solve sdata
           options   = filter (`notElem` bads) possibles
           
           -- Choose one.
-          randVal   = randomElem options
+          randVal   = head options
           
           -- We're stuck, backtrack.
           newdata   = if null options
@@ -85,10 +84,10 @@ solve sdata
                         
                         -- 'Tis valid, we're fine.
                         then SolverData { sBoard    = tryBoard
-                                        , emptyLocs = filter (/= randLoc) $ emptyLocs sdata
+                                        , emptyLocs = tail $ emptyLocs sdata
                                         , lastLocs  = trace ("b size: " ++ show ( length $ randLoc : lastLocs sdata)) (randLoc : lastLocs sdata)
                                         , badValues = badValues sdata
-                                        , posValues = oldPos
+                                        , posValues = thenPos
                                         }
 
                         -- Didn't work, remove that possiblity.
