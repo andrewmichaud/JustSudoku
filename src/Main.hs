@@ -9,12 +9,12 @@ License     : Apache 2.0
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
-This module provides several things.  First, it provides a control loop for receiving and 
+This module provides several things.  First, it provides a control loop for receiving and
 interpreting player input.  This loop takes input, attempts to parse it (using Parse), gets
 the Move (using Move) the player intended, applies it, and either loops with the new state
 of the board after the move (if the move was valid), or loops with the old state of the board
 (if there was an error).  It also shows the board on each iteration and kills the program if
-a QuitError comes up (if the player asked to quit).  
+a QuitError comes up (if the player asked to quit).
 
 There are also functions for each possible move, to actually apply the player's moves.  If the
 moves fail for any reason, these functions return errors instead of valid new boards.
@@ -34,7 +34,7 @@ module Main (
 -- * Command-Line Processing
 , commandParse
 , exit
-, die
+, Main.die
 , continue
 
 -- * Program Information.
@@ -65,13 +65,12 @@ import Sudoku.Data.Board
 import Sudoku.Control.Move
 import Sudoku.Control.Parse
 import Sudoku.Control.Flag
-import View
 
 -- Styled after a friend's code.
 -- | Control loop for Sudoku game. Receive user input, process it (handling errors) and repeat.
 repl :: (SudokuBoard -> Move -> Either MoveError SudokuBoard) -> (String -> Maybe Move) -> SudokuBoard -> IO ()
 repl f parse initial = do
-    
+
     -- Grab input line.
     line <- getLine
 
@@ -93,7 +92,7 @@ repl f parse initial = do
             -- Obtain and print newstate.
             let newstate  = f initial a
             putStrLn $ either show prettyPrint newstate
-            
+
             -- Check if we were told to quit.
             maybeDie newstate
 
@@ -112,10 +111,10 @@ repl f parse initial = do
 -- | Die if we received a QuitError (by using checkError to check the error).
 maybeDie :: Either MoveError SudokuBoard -> IO ()
 maybeDie = either checkError (const continue )
-     
+
 -- | Die if passed a QuitError, otherwise do nothing.
 checkError :: MoveError -> IO ()
-checkError QuitError = die
+checkError QuitError = Main.die
 checkError _         = continue
 
 -- | Try to process a move.
@@ -150,7 +149,7 @@ move board (Erase row col)
         colInt   = readMaybe col
         newBoard = eraseBoardValue board (fromJust location)
 
--- Check if any squares are invalid. "Error" and show invalid squares if any exist. 
+-- Check if any squares are invalid. "Error" and show invalid squares if any exist.
 -- In any case, the original board will remain.
 move board (Check)
     | not (null invalidSquares) = Left $ InvalidBoardError invalidSquares
@@ -198,11 +197,11 @@ commandParse (args, fs, [])
     | Help `elem` args    = do
         hPutStrLn stderr (usageInfo header options)
         exitSuccess
-    
+
     | Version `elem` args = do
         hPutStrLn stderr version
         exitSuccess
-    
+
     | otherwise           = do
         let files = if null fs then ["-"] else fs
         return (nub args, files)
@@ -219,40 +218,29 @@ main = do
 
     -- Command line arguments.
     arguments <- getArgs
-    
+
     let argTriple = getOpt Permute options arguments
 
     (args, _) <- commandParse argTriple
-    
+
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"
     let board = attemptLoad contents
 
     -- Process arguments.
-    if Graphical `elem` args
-        
-        -- Graphical branch.
-        then do
-            -- Initialize and retrieve GUI.
-            window <- initSudokuView board
-            runSudokuWindow window
+    do
 
-        -- Command line branch.
-        else do
-    
-            -- Game header.
-            putStrLn $ "This is Sudoku-Linux version " ++ versionNum ++ " \n"
+        -- Game header.
+        putStrLn $ "This is Sudoku-Linux version " ++ versionNum ++ " \n"
 
-            -- Print original board.
-            putStrLn "This is the board\n"
+        -- Print original board.
+        putStrLn "This is the board\n"
+        putStrLn $ prettyPrint board
 
-            putStrLn $ prettyPrint board
+        -- Print prompt.
+        putStrLn "What would you like to do?\n"
 
-            -- Print prompt.
-            putStrLn "What would you like to do?\n"
-            
-            -- Enter control loop.
-            repl move parseMove board
+        -- Enter control loop.
+        repl move parseMove board
 
-            exit
-
+        exit
