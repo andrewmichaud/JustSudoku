@@ -25,7 +25,6 @@ before_install:
     - cabal install hspec --avoid-reinstalls
     - cabal install hpc-coveralls --avoid-reinstalls
 
-
 install:
     - cabal install --only-dependencies --enable-tests --avoid-reinstalls
 
