@@ -7,7 +7,8 @@ main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec = describe "sToIntRange" $ do
+spec = do
+    describe "sToIntRange" $ do
         it "should return Nothing if the range is empty" $
             sToIntRange "a" [] `shouldBe` Nothing
 
@@ -19,3 +20,7 @@ spec = describe "sToIntRange" $ do
 
         it "should return Nothing if the string is not in the range" $
             sToIntRange "2" [1] `shouldBe` Nothing
+
+    describe "getIORow"
+        it "should work with return () " $
+            getIORow 1 (return ()) `shouldBe` [return ()]
