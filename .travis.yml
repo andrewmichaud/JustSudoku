@@ -36,6 +36,3 @@ script:
 
 after_script:
     - hpc-coveralls --coverage-mode=StrictlyFullLines --exclude-dir=test test-all
-
-notifications:
-    - email: true
