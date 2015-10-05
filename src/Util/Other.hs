@@ -1,19 +1,15 @@
--- 03/09/14
-
 {-|
-
 Module      : Util.Other
 Description : Hopefully useful utility functions.
-Copyright   : (c) Andrew Michaud, 2014
-License     : Apache 2.0
+Copyright   : (c) Andrew Michaud, 2015
+License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
-This module houses any methods that don't quite fit in anywhere else (or are generic enough to 
-deserve placement in a separate module).  Currently, there are two methods for incrementing 
+This module houses any methods that don't quite fit in anywhere else (or are generic enough to
+deserve placement in a separate module).  Currently, there are two methods for incrementing
 tuples, two methods for generating lists of IO objects, and a method for converting a string
 into an integer conditionally.
-
 -}
 
 module Util.Other (
@@ -28,7 +24,6 @@ module Util.Other (
 
 -- * String
 , sToIntRange
-        
 ) where
 
 import Control.Monad(replicateM)
@@ -47,7 +42,6 @@ addToTupleIf new fstCond sndCond (f, s) = result
 incrementTupleIf :: (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
 incrementTupleIf = addToTupleIf 1
 
-
 -- For IO
 
 -- | Given an Int n and a function returning an IO a, return an IO list of n a.
@@ -61,18 +55,16 @@ getIORow count func = do
 getIOGrid :: Int -> IO a -> IO [[a]]
 getIOGrid count func = do
     entryRow <- getIORow count func
-    grid     <- replicateM (count - 1) $ getIORow count func 
+    grid     <- replicateM (count - 1) $ getIORow count func
     return $ entryRow : grid
-
 
 -- For Strings.
 
--- | Given a string and a range, return either Just the string converted to an Int if it is 
+-- | Given a string and a range, return either Just the string converted to an Int if it is
 --   in range, or Nothing.
 sToIntRange :: String -> [Int] -> Maybe Int
 sToIntRange str range
     | val `elem` mRange = val
     | otherwise         = Nothing
-    where val = readMaybe str
+    where val    = readMaybe str
           mRange = map Just range
-
