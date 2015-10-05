@@ -1,20 +1,18 @@
--- 02/05/14
-
 {-|
 
 Module      : Board
 Description : Methods and datatypes for creating and manipulating Sudoku Boards.
-Copyright   : (c) Andrew Michaud, 2014
-License     : Apache 2.0
+Copyright   : (c) Andrew Michaud, 2015
+License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
 This module includes the methods to create a SudokuBoard, the types used to construct one, and
-all of the methods used to interact with one once it's created. 
+all of the methods used to interact with one once it's created.
 
 -}
 
-module Sudoku.Data.Board ( 
+module Sudoku.Data.Board (
 -- * Classes
   SqVal
 , Square
@@ -55,13 +53,13 @@ import Util.Other
 
 -- | Location on a SudokuGrid - a coordinate pair.
 data Location
-    
+
     -- | Create location given row and column.
     = Loc Int Int deriving (Eq)
 
 -- | Type for Sudoku square value.  Stores value and whether this square was placed at
 --   creation of the board or not.
-data Square = Empty |               -- ^ An empty square. 
+data Square = Empty |               -- ^ An empty square.
               Val { value :: SqVal  -- ^ Value of square.
                   , isOrig  :: Bool -- ^ Did this square come with the board?
                   } deriving (Eq)
@@ -71,8 +69,8 @@ data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 -- ^ Constructors for va
              deriving (Eq, Ord, Enum, Show)
 
 -- | Type for Sudoku board.  Just a 2D list of squares.
-data SudokuBoard 
-    
+data SudokuBoard
+
     -- | Create board from 2D list.
     = SudokuBoard [[Square]] deriving (Eq, Show)
 
@@ -100,7 +98,7 @@ toSquare _ = Nothing
 
 -- | Create location from two strings specifying coordinates.
 toLocation :: String -> String -> Maybe Location
-toLocation rowStr colStr 
+toLocation rowStr colStr
     | isNothing r || isNothing c = Nothing
     | otherwise                  = Just $ Loc (fromJust r) (fromJust c)
     where
@@ -122,7 +120,7 @@ attemptLoad fileContents = board
     where
         fileLines   = lines fileContents
         fileStrings = map words fileLines
-        board       = createBoard fileStrings 
+        board       = createBoard fileStrings
 
 -- | Reset board.  Values placed when the board was created are not changed.
 resetBoard :: SudokuBoard -> SudokuBoard
@@ -148,23 +146,23 @@ getBoardValue (SudokuBoard board) (Loc r c) = val
 setBoardValue :: SudokuBoard -> Location -> Square -> SudokuBoard
 setBoardValue (SudokuBoard board) (Loc r c) newSquare = SudokuBoard newBoard
     where
-        
+
         -- Create new row.
         oldRow   = board !! r
         oldValue = oldRow !! c
-        newRow   
-            | oldValue == Empty = take c oldRow ++ [newSquare] ++ drop (c + 1) oldRow 
+        newRow
+            | oldValue == Empty = take c oldRow ++ [newSquare] ++ drop (c + 1) oldRow
             | isOrig oldValue   = oldRow
             | otherwise         = take c oldRow ++ [newSquare] ++ drop (c + 1) oldRow
 
-	-- Create new board.
+        -- Create new board.
         newBoard  = take r board ++ [newRow] ++ drop (r + 1) board
-        
+
 -- | Erase square of a SudokuBoard if it isn't original.
 eraseBoardValue :: SudokuBoard -> Location -> SudokuBoard
 eraseBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = SudokuBoard newBoard
     where
-        oldRow   = board !! rowIndex 
+        oldRow   = board !! rowIndex
         oldValue = oldRow !! colIndex
         newRow
             | oldValue == Empty = oldRow
@@ -174,12 +172,12 @@ eraseBoardValue (SudokuBoard board) (Loc rowIndex colIndex) = SudokuBoard newBoa
         newBoard  = take rowIndex board ++ [newRow] ++ drop (rowIndex + 1) board
 
 -- | Checks if a SudokuBoard is currently valid or not.
---   Checks all rows, columns, and subgrids with checkList and returns a 
+--   Checks all rows, columns, and subgrids with checkList and returns a
 --   list of squares in error.
 checkBoard :: SudokuBoard -> [Location]
 checkBoard sudokuBoard = allPairs
     where
-        
+
         -- Get all kinds of paires.
         rowPairs       = checkRows sudokuBoard
         colPairs       = checkCols sudokuBoard
@@ -194,17 +192,17 @@ prettyPrint (SudokuBoard board) = niceBoard
     where
         -- Horizontal spacer line.
         horSepLine    = unwords (replicate 17 " ")
-        
+
         -- Convert all SquareValues to strings.
         stringBoard   = map (map show) board
-        
+
         -- Insert vertical spaces and then join lines into strings.
         vSpacedBoard  = map (sudokuSpacer " ") stringBoard
         unwordedBoard = map unwords vSpacedBoard
-       
+
         -- Separate rows with horizontal space lines.
         separated     = sudokuSpacer horSepLine unwordedBoard
-        
+
         -- Join array into newline-separated string.
         niceBoard     = unlines separated
 
@@ -221,7 +219,7 @@ instance Show Location where
 
 -- | Turn an int into an index value.
 toIndex :: String -> Maybe Int
-toIndex str = sToIntRange str [0..8] 
+toIndex str = sToIntRange str [0..8]
 
 -- | Create board from array of array of string.  Used for loading from files.
 createBoard :: [[String]] -> SudokuBoard
@@ -314,9 +312,8 @@ subgridHelper _ = []
 --   three from the last three rows.
 sudokuSpacer :: a -> [a] -> [a]
 sudokuSpacer spacer array = result
-    where 
+    where
         first3 = take 3 array
         mid3   = take 3 (drop 3 array)
         last3  = drop 6 array
         result = first3 ++ [spacer] ++ mid3 ++ [spacer] ++ last3
-        

@@ -1,11 +1,9 @@
--- 03/08/14
-
 {-|
 
 Module      : Control.Flag
 Description : Defines flags and option descriptions.
-Copyright   : (c) Andrew Michaud, 2014
-License     : Apache 2.0
+Copyright   : (c) Andrew Michaud, 2015
+License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
@@ -15,7 +13,7 @@ type, and descriptions and long and short option flags are provided as well.
 -}
 
 module Sudoku.Control.Flag (
-  
+
 -- * Classes
   Flag(..)
 
@@ -35,15 +33,12 @@ data Flag
 
 -- | Describe all allowed command-line options.
 options :: [OptDescr Flag]
-options = 
-    [ Option "g" ["graphical"] (NoArg Graphical)
-        "Start the graphical interface."
-    , Option "f" ["file"]      (ReqArg File "File") 
-        "Provide a file to load a Sudoku board from."
-    , Option "V" ["version"]   (NoArg Version)
-        "Print out version information."
-    , Option "h" ["help"]      (NoArg Help)
-        "Print this help message."
-    ]
-
-
+options = [ Option "g" ["graphical"] (NoArg Graphical)
+            "Start the graphical interface."
+          , Option "f" ["file"]      (ReqArg File "File")
+            "Provide a file to load a Sudoku board from."
+          , Option "V" ["version"]   (NoArg Version)
+            "Print out version information."
+          , Option "h" ["help"]      (NoArg Help)
+            "Print this help message."
+          ]
