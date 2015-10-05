@@ -2,3 +2,4 @@
 *.hi
 *.swp
 *.swo
+.cabal-sandbox/*
