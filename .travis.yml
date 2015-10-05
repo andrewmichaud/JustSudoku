@@ -6,7 +6,7 @@ ghc:
 before_install:
     - export PATH=$HOME/.cabal/bin:$PATH
     - cabal update
-    - cabal install hspec hlint
+    - cabal install hspec hlint happy alex
     - cabal install --only-dependencies --enable-tests
 
 script:
@@ -17,7 +17,7 @@ script:
 
 after_script:
     - cabal install hpc-coveralls
-    - hpc-coveralls --coverage-mode=StrictlyFullLines --exclude-fir=test test-all
+    - hpc-coveralls --coverage-mode=StrictlyFullLines --exclude-dir=test test-all
 
 notifications:
     - email: true
