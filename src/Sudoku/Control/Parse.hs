@@ -1,17 +1,15 @@
--- 02/15/14
-
 {-|
 
 Module      : Control.Parse
 Description : Methods for parsing moves and for creating locations and squares.
-Copyright   : (c) Andrew Michaud, 2014
-License     : Apache 2.0
+Copyright   : (c) Andrew Michaud, 2015
+License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
 This module includes a parseMove method, which takes a string and returns a Move (of those
 defined in the Move module) that matches.  If no move matches, Nothing is returned.  Functions are
-also provided to turn two possibly-valid coordinates (as strings) into a Location, and to turn a 
+also provided to turn two possibly-valid coordinates (as strings) into a Location, and to turn a
 possibly-valid string into the value of a new Square.  These methods need to parse raw user
 input, so they're rather strict on what they accept as valid input.
 
@@ -63,4 +61,3 @@ parseSquare = toSquare
 -- | Turn two ints into a Location
 parseLocation :: String -> String -> Maybe Location
 parseLocation = toLocation
-

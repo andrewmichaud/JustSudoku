@@ -1,30 +1,28 @@
--- 02/15/14
-
 {-|
 
 Module      : Control.Move
 Description : Defines valid Moves and MoveErrors for Sudoku application.
-Copyright   : (c) Andrew Michaud, 2014
-License     : Apache 2.0
+Copyright   : (c) Andrew Michaud, 2015
+License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
 This module describes the Moves a player is allowed to make on the Sudoku board.  It also
-describes the possible MoveErrors that can result if the player's move is improper.  These two 
+describes the possible MoveErrors that can result if the player's move is improper.  These two
 types are used by Parse and the controller to interpret player commands and to inform the player
 of the results of their moves.
 
 -}
 
 module Sudoku.Control.Move (
-  
+
 -- * Classes
   Move(..)
 , MoveError(..)
 ) where
 
 -- For custom errors.
-import Control.Monad.Error
+import Control.Monad.Except
 
 import Sudoku.Data.Board
 
@@ -43,18 +41,12 @@ data MoveError = NaNError String              | -- ^ Provided value is not a num
                  QuitError                    | -- ^ Asked to quit game.
                  OtherError String              -- ^ Other error not described above.
 
--- | Error for a MoveError.  This shouldn't happen.
-instance Error MoveError where
-    noMsg  = OtherError "Something has gone horribly wrong."
-    strMsg = OtherError
-
 -- | What each error shows when it occurs.
 instance Show MoveError where
-    show (NaNError val)            = "Value " ++ val ++ " is not a number."
-    show (OutOfBoundsError row col)  = "Square (" ++ show row ++ ", " ++ show col 
-                                                 ++ " is out of bounds."
-    show (InvalidValueError val)   = "Value " ++ show val ++ " is invalid."
+    show (NaNError val)              = "Value " ++ val ++ " is not a number."
+    show (OutOfBoundsError row col)  = "Square (" ++ show row ++ ", " ++ show col
+                                                  ++ " is out of bounds."
+    show (InvalidValueError val)     = "Value " ++ show val ++ " is invalid."
     show (InvalidBoardError squares) = "Board is invalid. Invalid squares: " ++ show squares
     show (OtherError string)         = "General error: " ++ string
     show QuitError                   = "Asked or required to quit!"
-

@@ -1,11 +1,9 @@
--- 2/11/14
-
 {-|
 
 Module      : Main
 Description :  Handles user input and controlling everything else.
-Copyright   : (c) Andrew Michaud, 2014
-License     : Apache 2.0
+Copyright   : (c) Andrew Michaud, 2015
+License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
