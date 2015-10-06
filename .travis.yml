@@ -11,6 +11,7 @@ addons:
         packages:
             - cabal-install-head
             - ghc-head
+            - happy
 
 before_install:
     - export PATH=$HOME/.cabal/bin:$PATH
