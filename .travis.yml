@@ -2,7 +2,7 @@ language: haskell
 
 sudo: false
 
-env: CABALVER=head GHCVER=head PATH=/opt:$PATH
+env: CABALVER=head GHCVER=head
 
 addons:
     apt:
@@ -11,14 +11,13 @@ addons:
         packages:
             - cabal-install-head
             - ghc-head
-            - happy
-            - hlint
 
 before_install:
     - export PATH=$HOME/.cabal/bin:$PATH
     - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
     - cabal update
     - sed -i 's/^jobs:/-- jobs:/' ${HOME}/.cabal/config
+    - cabal install hlint --avoid-reinstalls
     - cabal install hspec --avoid-reinstalls
     - cabal install hpc-coveralls --avoid-reinstalls
 
