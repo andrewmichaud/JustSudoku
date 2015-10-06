@@ -20,7 +20,7 @@ before_install:
     - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
     - cabal update
     - sed -i 's/^jobs:/-- jobs:/' ${HOME}/.cabal/config
-    - cabal install hspec --avoid-reinstalls
+    - cabal install hspec
     - cabal install hpc-coveralls --avoid-reinstalls
 
 install:
