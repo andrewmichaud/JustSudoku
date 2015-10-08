@@ -18,11 +18,11 @@ module Util.Other (
   addToTupleIf
 , incrementTupleIf
 
--- * IO
-, getIORow
-, getIOGrid
+-- * Monads
+, getMonadicRow
+, getMonadicGrid
 
--- * String
+-- * Strings
 , sToIntRange
 ) where
 
@@ -44,18 +44,18 @@ incrementTupleIf = addToTupleIf 1
 
 -- For IO
 
--- | Given an Int n and a function returning an IO a, return an IO list of n a.
-getIORow :: Int -> IO a -> IO [a]
-getIORow count func = do
+-- | Given an Int n and a function returning a monad a, return an monad list of n a.
+getMonadicRow :: (Monad m) => Int -> m a -> m [a]
+getMonadicRow count func = do
     entry <- func
     row   <- replicateM (count - 1) func
     return $ entry : row
 
--- | Given an Int n and a function returning an IO a, return an IO list of lists of n a.
-getIOGrid :: Int -> IO a -> IO [[a]]
-getIOGrid count func = do
-    entryRow <- getIORow count func
-    grid     <- replicateM (count - 1) $ getIORow count func
+-- | Given an Int n and a function returning a monad a, return a monad list of lists of n a.
+getMonadicGrid :: (Monad m) => Int -> m a -> m [[a]]
+getMonadicGrid count func = do
+    entryRow <- getMonadicRow count func
+    grid     <- replicateM (count - 1) $ getMonadicRow count func
     return $ entryRow : grid
 
 -- For Strings.
