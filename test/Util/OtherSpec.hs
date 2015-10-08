@@ -21,6 +21,10 @@ spec = do
         it "should return Nothing if the string is not in the range" $
             sToIntRange "2" [1] `shouldBe` Nothing
 
-    describe "getIORow"
-        it "should work with return () " $
-            getIORow 1 (return ()) `shouldBe` [return ()]
+    describe "getMonadicRow" $
+        it "should work with Just 1" $
+            getMonadicRow 1 (Just 1) `shouldBe` Just [1]
+
+    describe "getMonadicGrid" $
+        it "should work with Just 1" $
+            getMonadicGrid 1 (Just 1) `shouldBe` Just [[1]]
