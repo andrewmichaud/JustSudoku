@@ -2,7 +2,7 @@ language: haskell
 
 sudo: false
 
-env: CABALVER=1.22 GHCVER=head
+env: CABALVER=1.22 GHCVER=7.8.4
 
 addons:
     apt:
@@ -10,7 +10,7 @@ addons:
             - hvr-ghc
         packages:
             - cabal-install-1.22
-            - ghc-head
+            - ghc-7.8.4
             - haskell-platform
             - alex-3.1.4
             - happy-1.19
