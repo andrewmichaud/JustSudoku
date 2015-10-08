@@ -27,4 +27,4 @@ spec = do
         it "should work with Just n" $
             getMonadicGrid int1 (Just int1) `shouldBe` Just [[1]]
         it "should return an empty grid of the right type given 0" $
-            getMonadicGrid int0 (Just int1) `shouldBe` Just []
+            getMonadicGrid int0 (Just int1) `shouldBe` Just [[]]
