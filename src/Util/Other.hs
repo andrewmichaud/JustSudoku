@@ -19,7 +19,6 @@ module Util.Other (
 , incrementTupleIf
 
 -- * Monads
-, getMonadicRow
 , getMonadicGrid
 
 -- * Strings
@@ -42,21 +41,13 @@ addToTupleIf new fstCond sndCond (f, s) = result
 incrementTupleIf :: (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
 incrementTupleIf = addToTupleIf 1
 
--- For IO
-
--- | Given an Int n and a function returning a monad a, return an monad list of n a.
-getMonadicRow :: (Monad m) => Int -> m a -> m [a]
-getMonadicRow 0 func = tail $ replicate 1 func
-getMonadicRow count func = do
-    entry <- func
-    row   <- replicateM (count - 1) func
-    return $ entry : row
+-- For Monads
 
 -- | Given an Int n and a function returning a monad a, return a monad list of lists of n a.
 getMonadicGrid :: (Monad m) => Int -> m a -> m [[a]]
 getMonadicGrid count func = do
-    entryRow <- getMonadicRow count func
-    grid     <- replicateM (count - 1) $ getMonadicRow count func
+    entryRow <- replicateM count func
+    grid     <- replicateM (count - 1) $ replicateM count func
     return $ entryRow : grid
 
 -- For Strings.
