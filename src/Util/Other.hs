@@ -46,6 +46,7 @@ incrementTupleIf = addToTupleIf 1
 
 -- | Given an Int n and a function returning a monad a, return an monad list of n a.
 getMonadicRow :: (Monad m) => Int -> m a -> m [a]
+getMonadicRow 0 func = tail $ replicate 1 func
 getMonadicRow count func = do
     entry <- func
     row   <- replicateM (count - 1) func
