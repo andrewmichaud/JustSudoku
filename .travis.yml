@@ -13,7 +13,7 @@ addons:
             - ghc-7.8.4
             - haskell-platform
             - alex-3.1.4
-            - happy-1.19
+            - happy-1.19.5
             - hlint
             - hscolour
 
