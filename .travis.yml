@@ -36,7 +36,8 @@ script:
     - cabal test --show-details=always
 
 after_script:
-    - hpc-coveralls spec --exclude-dir=test --display-report
+    # lol
+    - hpc-coveralls spec --exclude-dir=test --display-report || true
 
 notifications:
     on_failure: always
