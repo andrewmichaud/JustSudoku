@@ -36,4 +36,7 @@ script:
     - cabal test --show-details=always
 
 after_script:
-    - hpc-coveralls --coverage-mode=StrictlyFullLines --exclude-dir=test test-all
+    - hpc-coveralls spec --exclude-dir=test --display-report
+
+notifications:
+    on_failure: always
