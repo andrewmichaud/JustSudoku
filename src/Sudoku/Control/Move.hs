@@ -32,6 +32,7 @@ data Move = Set String String String | -- ^ Set square, provides coordinates and
             Erase String String      | -- ^ Erase square, provides coordinates.
             Reset                    | -- ^ Reset board.
             Quit                       -- ^ Quit game.
+            deriving (Show, Eq)
 
 -- | Kinds of move errors that can occur.
 data MoveError = NaNError String              | -- ^ Provided value is not a number.

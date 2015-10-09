@@ -178,7 +178,7 @@ checkBoard :: SudokuBoard -> [Location]
 checkBoard sudokuBoard = allPairs
     where
 
-        -- Get all kinds of paires.
+        -- Get all kinds of pairs.
         rowPairs       = checkRows sudokuBoard
         colPairs       = checkCols sudokuBoard
         subgridPairs   = checkSubgrids sudokuBoard
