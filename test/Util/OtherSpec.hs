@@ -7,7 +7,7 @@ main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec = do
+spec = parallel $ do
     let int0 = 0::Int
     let int1 = 1::Int
     describe "sToIntRange" $ do
@@ -15,7 +15,7 @@ spec = do
             sToIntRange "a" [] `shouldBe` Nothing
 
         it "should return Nothing if the string is empty" $
-            sToIntRange "" [] `shouldBe` Nothing
+            sToIntRange "" [1,2,3,4] `shouldBe` Nothing
 
         it "should return an int if it is in the range" $
             sToIntRange "1" [1] `shouldBe` Just 1
