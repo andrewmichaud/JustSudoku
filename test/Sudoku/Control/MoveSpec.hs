@@ -1,7 +1,7 @@
 module Sudoku.Control.MoveSpec (main, spec) where
 
 import Test.Hspec
-import Sudoku.Control.Move.Internal
+import Sudoku.Control.Move
 import Sudoku.Data.Board.Internal
 
 main :: IO ()
