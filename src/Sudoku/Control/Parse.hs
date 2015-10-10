@@ -56,7 +56,7 @@ parseMove _ = Nothing
 -- | Turn an Int into a square (or nothing).
 --   0 is turned into Empty.
 parseSquare :: String -> Maybe Square
-parseSquare = toSquare
+parseSquare = toSquare False
 
 -- | Turn two ints into a Location
 parseLocation :: String -> String -> Maybe Location
