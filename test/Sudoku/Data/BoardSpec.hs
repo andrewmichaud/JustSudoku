@@ -63,7 +63,6 @@ spec = do
         it "should return Nothing given anything else" $
             toSquare False "fish" `shouldBe` Nothing
 
-
     describe "toIndex" $ do
         it "should provide Just Int if given something in 0..8" $ do
             toIndex "0" `shouldBe` Just 0
@@ -75,6 +74,7 @@ spec = do
             toIndex "6" `shouldBe` Just 6
             toIndex "7" `shouldBe` Just 7
             toIndex "8" `shouldBe` Just 8
+
         it "should provide Nothing in any other case" $ do
             toIndex "-1" `shouldBe` Nothing
             toIndex "9" `shouldBe` Nothing
@@ -84,6 +84,7 @@ spec = do
         context "Equality" $ do
             it "Empty should equal Empty" $
                 Empty `shouldBe` Empty
+
             it "values that are the same should be equal" $ do
                 val1True `shouldBe` val1True
                 val2True `shouldBe` val2True
@@ -103,6 +104,7 @@ spec = do
                 val7False `shouldBe` val7False
                 val8False `shouldBe` val8False
                 val9False `shouldBe` val9False
+
             it "values that are not should not" $ do
                 val1True `shouldNotBe` val2True
                 val2True `shouldNotBe` val1True
@@ -111,9 +113,9 @@ spec = do
                 val1True `shouldNotBe` val1False
                 val1False `shouldNotBe` val1True
 
-    describe "Testing SqVal properties" $ do
-        context "Equality" $ do
-            it "Values should equal the same values" $ do
+    describe "Testing SqVal properties..." $ do
+        context "(In)Equality" $ do
+            it "Values should equal themselves." $ do
                 V1 `shouldBe` V1
                 V2 `shouldBe` V2
                 V3 `shouldBe` V3
@@ -123,11 +125,12 @@ spec = do
                 V7 `shouldBe` V7
                 V8 `shouldBe` V8
                 V9 `shouldBe` V9
-            it "Values should not equal things that aren't the same" $
+
+            it "Values should not equal other values." $
                 V1 `shouldNotBe` V2
 
         context "Ordering" $
-            it "Ordering should work" $ do
+            it "should work." $ do
                 V1 `shouldSatisfy` ( < V2)
                 V2 `shouldSatisfy` ( < V3)
                 V3 `shouldSatisfy` ( < V4)
