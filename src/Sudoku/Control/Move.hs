@@ -16,8 +16,8 @@ of the results of their moves.
 
 module Sudoku.Control.Move where
 
--- For custom errors.
-import Control.Monad.Except
+import Control.Monad.Except -- For custom errors.
+import Data.Set
 
 import Sudoku.Data.Board
 
@@ -30,12 +30,12 @@ data Move = Set String String String | -- ^ Set square, provides coordinates and
             deriving (Show, Eq)
 
 -- | Kinds of move errors that can occur.
-data MoveError = NaNError String              | -- ^ Provided value is not a number.
-                 OutOfBoundsError Int Int     | -- ^ Provided location is out of bounds.
-                 InvalidValueError Int        | -- ^ Provided value is invalid.
-                 InvalidBoardError [Location] | -- ^ Returned locations are invalid.
-                 QuitError                    | -- ^ Asked to quit game.
-                 OtherError String              -- ^ Other error not described above.
+data MoveError = NaNError String                  | -- ^ Provided value is not a number.
+                 OutOfBoundsError Int Int         | -- ^ Provided location is out of bounds.
+                 InvalidValueError Int            | -- ^ Provided value is invalid.
+                 InvalidBoardError (Set Location) | -- ^ Returned locations are invalid.
+                 QuitError                        | -- ^ Asked to quit game.
+                 OtherError String                  -- ^ Other error not described above.
 
 -- | What each error shows when it occurs.
 instance Show MoveError where

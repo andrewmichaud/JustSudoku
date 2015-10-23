@@ -1,6 +1,8 @@
 module Sudoku.Control.MoveSpec (main, spec) where
 
+import Data.Set(singleton)
 import Test.Hspec
+
 import Sudoku.Control.Move
 import Sudoku.Data.Board.Internal
 
@@ -32,7 +34,7 @@ spec = do
         let cs = show c
         let v = 100::Int
         let vs = show v
-        let squares = [Loc 1 2]
+        let squares = singleton $ Loc 1 2
         let ssquares = show squares
         context "Checking Show" $ do
             it "NaNError should display correctly" $

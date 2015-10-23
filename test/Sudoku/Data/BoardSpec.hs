@@ -393,3 +393,7 @@ spec = do
     describe "checkList:" $
         it "should return an empty set for an empty list." $
             checkList [] `shouldBe` Set.empty
+
+    describe "subgridHelper:" $
+        it "should return an empty list given a digit not in 0-8 inclusive." $
+            subgridHelper 9 `shouldBe` []

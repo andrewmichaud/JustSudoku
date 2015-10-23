@@ -14,8 +14,11 @@ into an integer conditionally.
 
 module Util.Other (
 
+-- * Lists
+  zipLists
+
 -- * Tuples
-  addToTupleIf
+, addToTupleIf
 , incrementTupleIf
 
 -- * Monads
@@ -28,7 +31,16 @@ module Util.Other (
 import Control.Monad(replicateM)
 import Text.Read(readMaybe)
 
--- For tuples
+-- For lists.
+
+-- | Helper function for check functions. Given two lists of lists, returns a list
+--   of lists of pairs.
+zipLists :: [[a]] -> [[b]] -> [[(a, b)]]
+zipLists [] _ = []
+zipLists _ [] = []
+zipLists (a:as) (b:bs) = zip a b : zipLists as bs
+
+-- For tuples.
 
 -- | Add int to tuple of int if the first condition is true for the first element of
 --   the tuple and the second is true for the second element.
@@ -41,7 +53,7 @@ addToTupleIf new fstCond sndCond (f, s) = result
 incrementTupleIf :: (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
 incrementTupleIf = addToTupleIf 1
 
--- For Monads
+-- For Monads.
 
 -- | Given an Int n and a monad a, return a monadic list of n lists of n a.
 getMonadicGrid :: (Monad m) => Int -> m a -> m [[a]]

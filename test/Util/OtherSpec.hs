@@ -7,9 +7,19 @@ main :: IO ()
 main = hspec spec
 
 spec :: Spec
-spec = parallel $ do
+spec = do
     let int0 = 0::Int
     let int1 = 1::Int
+    let emptyList = []::[[Int]]
+    let emptyCharIntList = []::[[(Char, Int)]]
+    let emptyIntCharList = []::[[(Int, Char)]]
+
+    describe "zipLists:" $ do
+        it "should return an empty list given an empty list and anything." $
+            zipLists emptyList ["a"] `shouldBe` emptyIntCharList
+
+        it "should return an empty list given anything and an empty list." $
+            zipLists ["a"] emptyList `shouldBe` emptyCharIntList
 
     describe "addToTupleIf" $ do
         it "should not add int if only the first condition is true." $ do
