@@ -133,7 +133,7 @@ checkBoard sudokuBoard = allPairs
           subgridPairs = checkSubgrids sudokuBoard
 
           -- Don't forget to remove duplicates within subgrids.
-          allPairs     = colPairs--(colPairs `union` subgridPairs) `union` (rowPairs `union` subgridPairs)
+          allPairs     = Set.unions [rowPairs, colPairs, subgridPairs]
 
 -- | Prints a SudokuBoard nicely.
 prettyPrint :: SudokuBoard -> String
@@ -211,14 +211,7 @@ checkList (x:xs)
     | otherwise      = answer
     where matchingY    = [fst y | y <- xs, snd x == snd y]
           headMatching = if not (List.null matchingY) then fst x : matchingY else []
-          answer       = (Set.fromList headMatching) `Set.union` (checkList xs)
-
--- | Helper function for check functions. Given two lists of lists, returns a list
---   of lists of pairs.
-zipLists :: [[a]] -> [[b]] -> [[(a, b)]]
-zipLists [] _ = []
-zipLists _ [] = []
-zipLists (a:as) (b:bs) = zip a b : zipLists as bs
+          answer       = Set.fromList headMatching `Set.union` checkList xs
 
 -- | Given an Int index of a subgrid, returns a list of Locations matching that subgrid.
 -- TODO find a better way to do this.

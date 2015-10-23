@@ -57,6 +57,7 @@ import System.Console.GetOpt( getOpt, usageInfo, ArgOrder(..) )
 import Data.Maybe
 
 import Data.List(nub)
+import qualified Data.Set as Set
 
 -- Sudoku-related things
 import Sudoku.Data.Board
@@ -150,7 +151,7 @@ move board (Erase row col)
 -- Check if any squares are invalid. "Error" and show invalid squares if any exist.
 -- In any case, the original board will remain.
 move board (Check)
-    | not (null invalidSquares) = Left $ InvalidBoardError invalidSquares
+    | not (Set.null invalidSquares) = Left $ InvalidBoardError invalidSquares
     | otherwise                 = Right board
     where
         invalidSquares = checkBoard board
