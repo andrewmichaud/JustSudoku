@@ -223,7 +223,7 @@ main = do
 
     -- Read from file.
     contents <- readFile "gamefiles/easy1.sfile"
-    let board = attemptLoad contents
+    let board = parseStringToBoard contents
 
     -- Process arguments.
     do
