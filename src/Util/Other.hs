@@ -43,12 +43,9 @@ incrementTupleIf = addToTupleIf 1
 
 -- For Monads
 
--- | Given an Int n and a function returning a monad a, return a monad list of lists of n a.
+-- | Given an Int n and a monad a, return a monadic list of n lists of n a.
 getMonadicGrid :: (Monad m) => Int -> m a -> m [[a]]
-getMonadicGrid count func = do
-    entryRow <- replicateM count func
-    grid     <- replicateM (count - 1) $ replicateM count func
-    return $ entryRow : grid
+getMonadicGrid count func = replicateM count $ replicateM count func
 
 -- For Strings.
 
