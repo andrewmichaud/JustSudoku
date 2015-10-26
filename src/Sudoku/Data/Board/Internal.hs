@@ -143,8 +143,8 @@ isValid sudokuBoard = Set.null (checkBoard sudokuBoard)
 isSolved :: SudokuBoard -> Bool
 isSolved (SudokuBoard squares) = isSolved
     where hasEmpties = or (concatMap (map isEmpty) squares)
-          valid      = checkBoard (SudokuBoard squares)
-          isSolved   = not hasEmpties && isValid (SudokuBoard squares)
+          valid      = isValid (SudokuBoard squares)
+          isSolved   = not hasEmpties && valid
 
 -- | Prints a SudokuBoard nicely.
 prettyPrint :: SudokuBoard -> String
