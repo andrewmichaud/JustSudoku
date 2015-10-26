@@ -135,22 +135,42 @@ checkBoard sudokuBoard = allPairs
           -- Don't forget to remove duplicates within subgrids.
           allPairs     = Set.unions [rowPairs, colPairs, subgridPairs]
 
+isValid :: SudokuBoard -> Bool
+isValid sudokuBoard = Set.null (checkBoard sudokuBoard)
+
+-- | Check if SudokuBoard is solved or not.
+--   A solved board has no empty squares and is a valid board.
+isSolved :: SudokuBoard -> Bool
+isSolved (SudokuBoard squares) = isSolved
+    where hasEmpties = or (concatMap (map isEmpty) squares)
+          valid      = checkBoard (SudokuBoard squares)
+          isSolved   = not hasEmpties && isValid (SudokuBoard squares)
+
 -- | Prints a SudokuBoard nicely.
 prettyPrint :: SudokuBoard -> String
 prettyPrint (SudokuBoard board) = niceBoard
-    where -- Convert all SquareValues to strings.
-          stringBoard   = map (map show) board
+    where -- Convert all SquareValues to strings - get a list of lists of string.
+          lolStrings    = map (map show) board
 
-          -- Insert vertical spaces and then join lines into strings.
-          vSpacedBoard  = map (sudokuSpacer " ") stringBoard
-          unwordedBoard = map unwords vSpacedBoard
+          -- Convert to list of strings.
+          linesBoard    = map concat lolStrings
 
-          -- Separate rows with horizontal space lines.
-          hDiv          = List.intercalate "" (replicate (length (head unwordedBoard)) " ")
-          separated     = sudokuSpacer hDiv unwordedBoard
+          -- Horizontally index the board.
+          hIndexLines   = [concatMap show [0..8], replicate (length $ head linesBoard) '.']
+          hIndexedBoard = hIndexLines ++ linesBoard
 
-          -- Join array into newline-separated string.
-          niceBoard     = unlines separated
+          -- Apply vertical spacing.
+          vSpacedBoard  = map (sudokuSpacer '.') hIndexedBoard
+          vIndexCols    = replicate 2 "  " ++ map ((++ ".") . show) [0..8]
+          indexedBoard  = zipWith (++) vIndexCols vSpacedBoard
+
+          -- Apply horizontal spacing.
+          hDiv          = List.intercalate "" (replicate (length $ head indexedBoard) ".")
+          headBoard     = take 2 indexedBoard
+          restBoard     = drop 2 indexedBoard
+
+          -- Also turn into a single string.
+          niceBoard     = unlines (map (List.intersperse ' ') (headBoard ++ sudokuSpacer hDiv restBoard))
 
 -- | Show either the number, or "_" for empty.
 instance Show Square where
@@ -159,7 +179,7 @@ instance Show Square where
 
 -- | Show a location as a tuple of coordinates.
 instance Show Location where
-    show (Loc r c) = show (r, c)
+    show (Loc r c) = "(" ++ show r ++ ", " ++ show c ++ ")"
 
 -- Not exported publicly.
 
@@ -202,13 +222,10 @@ checkSubgrids = checkLocGrid locations
 checkList :: [(Location, Square)] -> Set.Set Location
 checkList [] = Set.empty
 checkList (x:xs)
-    | null xs        = Set.empty
-    | null (tail xs) = if snd x == Empty
-                       then checkList xs
-                       else if snd x == snd (head xs)
+    | length xs == 1 = if snd x == snd (head xs)
                            then Set.fromList [fst x, fst $ head xs]
                            else Set.empty
-    | otherwise      = answer
+    | otherwise   = answer
     where matchingY    = [fst y | y <- xs, snd x == snd y]
           headMatching = if not (List.null matchingY) then fst x : matchingY else []
           answer       = Set.fromList headMatching `Set.union` checkList xs
@@ -227,12 +244,11 @@ subgridHelper 7 = [Loc r c | r <- [6..8], c <- [3..5]]
 subgridHelper 8 = [Loc r c | r <- [6..8], c <- [6..8]]
 subgridHelper _ = []
 
--- | Given an array and a spacer, uses the spacer to separate
---   the first three from the middle three rows and the middle
---   three from the last three rows.
+-- | Given a spacer and an array, use the spacer to separate the first three from the middle three
+--   rows and the middle three from the last three rows.
 sudokuSpacer :: a -> [a] -> [a]
 sudokuSpacer spacer array = result
     where first3 = take 3 array
           mid3   = take 3 (drop 3 array)
           last3  = drop 6 array
-          result = first3 ++ [spacer] ++ mid3 ++ [spacer] ++ last3
+          result = first3 ++ spacer : mid3 ++ spacer : last3

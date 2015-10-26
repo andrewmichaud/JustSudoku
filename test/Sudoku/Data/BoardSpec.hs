@@ -62,17 +62,19 @@ spec = do
 
     let uglyTestBoard = "SudokuBoard " ++ show boardSquares
 
-    let prettyTestBoard = "_ _ _   _ _ _   _ _ _\n" ++
-                          "_ 1 _   _ 2 _   _ 3 _\n" ++
-                          "_ _ _   _ _ _   _ _ _\n" ++
-                          "                     \n" ++
-                          "_ _ _   _ _ _   _ _ _\n" ++
-                          "_ 4 _   _ 5 _   _ 6 _\n" ++
-                          "_ _ _   _ _ _   _ _ _\n" ++
-                          "                     \n" ++
-                          "_ _ _   _ _ _   _ _ _\n" ++
-                          "_ 7 _   _ 8 _   _ 9 _\n" ++
-                          "_ _ _   _ _ _   _ _ _\n"
+    let prettyTestBoard = "    0 1 2 . 3 4 5 . 6 7 8\n" ++
+                          "    . . . . . . . . . . .\n" ++
+                          "0 . _ _ _ . _ _ _ . _ _ _\n" ++
+                          "1 . _ 1 _ . _ 2 _ . _ 3 _\n" ++
+                          "2 . _ _ _ . _ _ _ . _ _ _\n" ++
+                          ". . . . . . . . . . . . .\n" ++
+                          "3 . _ _ _ . _ _ _ . _ _ _\n" ++
+                          "4 . _ 4 _ . _ 5 _ . _ 6 _\n" ++
+                          "5 . _ _ _ . _ _ _ . _ _ _\n" ++
+                          ". . . . . . . . . . . . .\n" ++
+                          "6 . _ _ _ . _ _ _ . _ _ _\n" ++
+                          "7 . _ 7 _ . _ 8 _ . _ 9 _\n" ++
+                          "8 . _ _ _ . _ _ _ . _ _ _\n"
 
     describe "Location properties." $ do
         context "Equality:" $
@@ -87,8 +89,8 @@ spec = do
 
         context "Show:" $
             it "should work correctly." $ do
-                show (Loc 0 1) `shouldBe` "(0,1)"
-                show (Loc 4 2) `shouldBe` "(4,2)"
+                show (Loc 0 1) `shouldBe` "(0, 1)"
+                show (Loc 4 2) `shouldBe` "(4, 2)"
 
     describe "Square properties." $ do
         context "Equality:" $ do
@@ -338,6 +340,11 @@ spec = do
             getBoardValue alteredBoard2 (Loc 4 1) `shouldBe` val4True
             getBoardValue alteredBoard3 (Loc 7 7) `shouldBe` val9True
 
+        it "should be the identity operation on an Empty square." $ do
+            let alteredBoard = eraseBoardValue eBoard (Loc 1 1)
+            getBoardValue eBoard (Loc 1 1) `shouldBe` empty
+            getBoardValue alteredBoard (Loc 1 1) `shouldBe` empty
+
     describe "checkBoard:" $ do
         it "should say an empty board is valid." $
             checkBoard eBoard `shouldBe` Set.empty
@@ -347,6 +354,26 @@ spec = do
 
         it "should not say a board of all 6 is valid." $
             checkBoard sixBoard `shouldBe` Set.fromList allLocations
+
+    describe "isValid:" $ do
+        it "should say an empty board is valid." $
+            isValid eBoard `shouldBe` True
+
+        it "should say an arbitrary valid board is valid." $
+            isValid testBoard `shouldBe` True
+
+        it "should say an invalid board is invalid." $
+            isValid sixBoard `shouldBe` False
+
+    describe "isSolved:" $ do
+        it "should not say an empty board is solved." $
+            isSolved emptyBoard `shouldBe` False
+
+        it "should not say an invalid board is solved." $
+            isSolved sixBoard `shouldBe` False
+
+        it "should not say a board with empty spaces is solved." $
+            isSolved testBoard `shouldBe` False
 
     describe "prettyPrint:" $
         it "should work correctly." $
@@ -390,9 +417,16 @@ spec = do
         it "should return an empty set for a valid board." $
             checkSubgrids testBoard `shouldBe` Set.empty
 
-    describe "checkList:" $
+    describe "checkList:" $ do
         it "should return an empty set for an empty list." $
             checkList [] `shouldBe` Set.empty
+
+        it "should return an empty set if given two elements with unequal squares." $
+            checkList [(Loc 0 0, Empty), (Loc 1 1, val1True)] `shouldBe` Set.empty
+
+        it "should return the right answer for any other case." $ do
+            let aList = [(Loc 0 0, Empty), (Loc 1 1, Empty), (Loc 2 2, val1True)]
+            checkList aList `shouldBe` Set.fromList (map fst (take 2 aList))
 
     describe "subgridHelper:" $
         it "should return an empty list given a digit not in 0-8 inclusive." $
