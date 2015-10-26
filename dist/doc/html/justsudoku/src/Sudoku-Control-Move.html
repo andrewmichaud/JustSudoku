@@ -25,8 +25,8 @@
 <a name="line-16"></a>
 <a name="line-17"></a><span class='hs-keyword'>module</span> <span class='hs-conid'>Sudoku</span><span class='hs-varop'>.</span><span class='hs-conid'>Control</span><span class='hs-varop'>.</span><span class='hs-conid'>Move</span> <span class='hs-keyword'>where</span>
 <a name="line-18"></a>
-<a name="line-19"></a><span class='hs-comment'>-- For custom errors.</span>
-<a name="line-20"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Control</span><span class='hs-varop'>.</span><span class='hs-conid'>Monad</span><span class='hs-varop'>.</span><span class='hs-conid'>Except</span>
+<a name="line-19"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Control</span><span class='hs-varop'>.</span><span class='hs-conid'>Monad</span><span class='hs-varop'>.</span><span class='hs-conid'>Except</span> <span class='hs-comment'>-- For custom errors.</span>
+<a name="line-20"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Set</span>
 <a name="line-21"></a>
 <a name="line-22"></a><span class='hs-keyword'>import</span> <span class='hs-conid'>Sudoku</span><span class='hs-varop'>.</span><span class='hs-conid'>Data</span><span class='hs-varop'>.</span><span class='hs-conid'>Board</span>
 <a name="line-23"></a>
@@ -39,12 +39,12 @@
 <a name="line-30"></a>            <span class='hs-keyword'>deriving</span> <span class='hs-layout'>(</span><span class='hs-conid'>Show</span><span class='hs-layout'>,</span> <span class='hs-conid'>Eq</span><span class='hs-layout'>)</span>
 <a name="line-31"></a>
 <a name="line-32"></a><a name="MoveError"></a><span class='hs-comment'>-- | Kinds of move errors that can occur.</span>
-<a name="line-33"></a><a name="MoveError"></a><span class='hs-keyword'>data</span> <span class='hs-conid'>MoveError</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>NaNError</span> <span class='hs-conid'>String</span>              <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Provided value is not a number.</span>
-<a name="line-34"></a>                 <span class='hs-conid'>OutOfBoundsError</span> <span class='hs-conid'>Int</span> <span class='hs-conid'>Int</span>     <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Provided location is out of bounds.</span>
-<a name="line-35"></a>                 <span class='hs-conid'>InvalidValueError</span> <span class='hs-conid'>Int</span>        <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Provided value is invalid.</span>
-<a name="line-36"></a>                 <span class='hs-conid'>InvalidBoardError</span> <span class='hs-keyglyph'>[</span><span class='hs-conid'>Location</span><span class='hs-keyglyph'>]</span> <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Returned locations are invalid.</span>
-<a name="line-37"></a>                 <span class='hs-conid'>QuitError</span>                    <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Asked to quit game.</span>
-<a name="line-38"></a>                 <span class='hs-conid'>OtherError</span> <span class='hs-conid'>String</span>              <span class='hs-comment'>-- ^ Other error not described above.</span>
+<a name="line-33"></a><a name="MoveError"></a><span class='hs-keyword'>data</span> <span class='hs-conid'>MoveError</span> <span class='hs-keyglyph'>=</span> <span class='hs-conid'>NaNError</span> <span class='hs-conid'>String</span>                  <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Provided value is not a number.</span>
+<a name="line-34"></a>                 <span class='hs-conid'>OutOfBoundsError</span> <span class='hs-conid'>Int</span> <span class='hs-conid'>Int</span>         <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Provided location is out of bounds.</span>
+<a name="line-35"></a>                 <span class='hs-conid'>InvalidValueError</span> <span class='hs-conid'>Int</span>            <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Provided value is invalid.</span>
+<a name="line-36"></a>                 <span class='hs-conid'>InvalidBoardError</span> <span class='hs-layout'>(</span><span class='hs-conid'>Set</span> <span class='hs-conid'>Location</span><span class='hs-layout'>)</span> <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Returned locations are invalid.</span>
+<a name="line-37"></a>                 <span class='hs-conid'>QuitError</span>                        <span class='hs-keyglyph'>|</span> <span class='hs-comment'>-- ^ Asked to quit game.</span>
+<a name="line-38"></a>                 <span class='hs-conid'>OtherError</span> <span class='hs-conid'>String</span>                  <span class='hs-comment'>-- ^ Other error not described above.</span>
 <a name="line-39"></a>
 <a name="line-40"></a><a name="instance%20Show%20MoveError"></a><span class='hs-comment'>-- | What each error shows when it occurs.</span>
 <a name="line-41"></a><a name="instance%20Show%20MoveError"></a><span class='hs-keyword'>instance</span> <span class='hs-conid'>Show</span> <span class='hs-conid'>MoveError</span> <span class='hs-keyword'>where</span>

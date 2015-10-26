@@ -16,6 +16,10 @@
 --   string into an integer conditionally.
 module Util.Other
 
+-- | Helper function for check functions. Given two lists of lists, returns
+--   a list of lists of pairs.
+zipLists :: [[a]] -> [[b]] -> [[(a, b)]]
+
 -- | Add int to tuple of int if the first condition is true for the first
 --   element of the tuple and the second is true for the second element.
 addToTupleIf :: Int -> (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
@@ -23,8 +27,7 @@ addToTupleIf :: Int -> (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int
 -- | Special case for adding one to tuple.
 incrementTupleIf :: (Int -> Bool) -> (Int -> Bool) -> (Int, Int) -> (Int, Int)
 
--- | Given an Int n and a function returning a monad a, return a monad list
---   of lists of n a.
+-- | Given an Int n and a monad a, return a monadic list of n lists of n a.
 getMonadicGrid :: (Monad m) => Int -> m a -> m [[a]]
 
 -- | Given a string and a range, return either Just the string converted to
@@ -66,9 +69,8 @@ toSquare :: Bool -> String -> Maybe Square
 -- | Create an empty SudokuBoard.
 emptyBoard :: SudokuBoard
 
--- | Attempts to load a board from a file. If it fails, an empty board is
---   returned.
-attemptLoad :: String -> SudokuBoard
+-- | Parses a string into a Board.
+parseStringToBoard :: String -> SudokuBoard
 
 -- | Prints a SudokuBoard nicely.
 prettyPrint :: SudokuBoard -> String
@@ -89,7 +91,7 @@ resetBoard :: SudokuBoard -> SudokuBoard
 -- | Checks if a SudokuBoard is currently valid or not. Checks all rows,
 --   columns, and subgrids with checkList and returns a list of squares in
 --   error.
-checkBoard :: SudokuBoard -> [Location]
+checkBoard :: SudokuBoard -> Set Location
 
 
 -- | This module describes the Moves a player is allowed to make on the
@@ -130,7 +132,7 @@ OutOfBoundsError :: Int -> Int -> MoveError
 InvalidValueError :: Int -> MoveError
 
 -- | Returned locations are invalid.
-InvalidBoardError :: [Location] -> MoveError
+InvalidBoardError :: (Set Location) -> MoveError
 
 -- | Asked to quit game.
 QuitError :: MoveError
