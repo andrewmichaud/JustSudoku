@@ -1,6 +1,7 @@
-*.o
 *.hi
-*.swp
+*.o
 *.swo
+*.swp
 .cabal-sandbox/*
-dist/doc
+dist
+.hpc
