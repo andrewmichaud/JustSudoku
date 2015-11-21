@@ -20,6 +20,7 @@ before_install:
     - export PATH=/opt/ghc/7.8.4/bin:$PATH
 
 install:
+    - stack init
     - stack build
 
 script:
