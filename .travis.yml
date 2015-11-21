@@ -21,6 +21,7 @@ before_install:
 
 install:
     - stack init
+    - stack setup
     - stack build
 
 script:
