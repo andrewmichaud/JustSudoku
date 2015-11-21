@@ -7,7 +7,7 @@ License     : BSD3
 Maintainer  : andrewjmichaud@gmail.com
 Stability   : experimental
 
-This module describes the flags permitted for the Sudoku application.  The flags exist as a data
+This module describes the flags permitted for the Sudoku application. The flags exist as a data
 type, and descriptions and long and short option flags are provided as well.
 
 -}

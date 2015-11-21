@@ -9,31 +9,22 @@ addons:
         sources:
             - hvr-ghc
         packages:
-            - cabal-install-1.22
             - ghc-7.8.4
-            - haskell-platform
-            - alex-3.1.4
-            - happy-1.19.5
             - hlint
             - hscolour
 
 before_install:
-    - export PATH=$HOME/.cabal/bin:$PATH
-    - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
-    - which cabal
-    - cabal update
-    - sed -i 's/^jobs:/-- jobs:/' ${HOME}/.cabal/config
-    - cabal install hspec --avoid-reinstalls
-    - cabal install hpc-coveralls --avoid-reinstalls
+    - mkdir -p ~/.local/bin
+    - export PATH=~/.local/bin:$PATH
+    - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+    - export PATH=/opt/ghc/7.8.4/bin:$PATH
 
 install:
-    - cabal install --only-dependencies --enable-tests --avoid-reinstalls
+    - stack build
 
 script:
     - hlint .
-    - cabal configure --enable-tests --enable-coverage
-    - cabal build
-    - cabal test --show-details=always
+    - stack test
 
 after_script:
     # lol
