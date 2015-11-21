@@ -5,3 +5,4 @@
 .cabal-sandbox/*
 dist
 .hpc
+.stack-work/*
