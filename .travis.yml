@@ -20,13 +20,12 @@ before_install:
     - export PATH=/opt/ghc/7.8.4/bin:$PATH
 
 install:
-    - stack init
-    - stack setup
-    - stack build
+    - ./travis_long stack --no-terminal --skip-ghc-check setup
+    - ./travis_long stack --no-terminal --skip-ghc-check test --only-snapshot
 
 script:
     - hlint .
-    - stack test
+    - stack --no-terminal --skip-ghc-check test
 
 after_script:
     # lol
