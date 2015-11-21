@@ -20,6 +20,7 @@ before_install:
     - export PATH=/opt/ghc/7.8.4/bin:$PATH
 
 install:
+    - stack init
     - stack --no-terminal --skip-ghc-check setup
     - stack --no-terminal --skip-ghc-check test --only-snapshot
 
