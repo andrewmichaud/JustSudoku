@@ -15,14 +15,15 @@ before_install:
 install:
     - stack build
     - stack install hpc-coveralls
+    - stack install hlint
 
 script:
-    - stack test
+    - stack test :justsudoku-test --no-terminal --coverage
 
 after_script:
     - hlint .
-    # lol
-    - hpc-coveralls spec --exclude-dir=test --display-report || true
+    - travis_retry curl -L https://github.com/rubik/stack-hpc-coveralls/releases/download/v0.0.1.0/shc-linux-x64-$GHC_VER.tar.bz2 | tar -xj
+    - ./shc JustSudoku justsudoku-test
 
 notifications:
     on_failure: always
