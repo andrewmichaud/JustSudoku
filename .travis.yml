@@ -14,13 +14,14 @@ before_install:
 
 install:
     - stack build
+    - stack install hpc-coveralls
 
 script:
     - stack test
 
 after_script:
-    # lol
     - hlint .
+    # lol
     - hpc-coveralls spec --exclude-dir=test --display-report || true
 
 notifications:
