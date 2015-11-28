@@ -33,8 +33,7 @@ parseMove command
     | map toLower (head split) == "set"   = setMove (tail split)
     where split = words command
 
--- Simple versions of commands. Not user-friendly, but they're what I originally came up with, so
--- they stay.
+-- Simple versions of commands. Not user-friendly, but they're what I originally came up with.
 -- Set value on board.
 parseMove ('s':r:c:v)
     | isNothing val = Nothing

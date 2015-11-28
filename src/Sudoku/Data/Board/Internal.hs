@@ -11,11 +11,10 @@ import Util.Other
 -- Types declared.
 
 -- | Location on a SudokuGrid - a coordinate pair.
-data Location -- | Create location given row and column.
-              = Loc Int Int deriving (Eq, Ord)
+data Location = Loc Int Int deriving (Eq, Ord) -- ^ Create location given row and col.
 
--- | Type for Sudoku square value.  Stores value and whether this square was placed at
---   creation of the board or not.
+-- | Type for Sudoku square value.  Stores value and whether this square was placed at creation of
+-- the board or not.
 data Square = Empty                  -- ^ An empty square.
             |  Val { value :: SqVal  -- ^ Value of square.
                    , isOrig  :: Bool -- ^ Did this square come with the board?
@@ -27,7 +26,7 @@ data SqVal = V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | V9 -- ^ Constructors for va
 
 -- | Type for Sudoku board.  Just a 2D list of squares.
 data SudokuBoard = SudokuBoard [[Square]] -- ^ Create board from 2D list.
-             deriving (Eq, Show)
+                   deriving (Eq, Show)
 
 -- Methods visible from this module.
 
@@ -48,7 +47,7 @@ toSquare b "6" = squareGen b V6
 toSquare b "7" = squareGen b V7
 toSquare b "8" = squareGen b V8
 toSquare b "9" = squareGen b V9
-toSquare b "_" = Just Empty
+toSquare _ "_" = Just Empty
 toSquare _  _  = Nothing
 
 -- | Helper method for toSquare to cut down on code repetition.
@@ -78,17 +77,15 @@ parseStringToBoard fileContents = board
           fileStrings = map words fileLines
           board       = createBoard fileStrings
 
--- | Reset board.  Values placed when the board was created are not changed.
+-- | Reset board. Values placed when the board was created are not changed.
 resetBoard :: SudokuBoard -> SudokuBoard
-resetBoard (SudokuBoard board) = SudokuBoard erased
-    where erased = map (map eraseLocation) board
+resetBoard (SudokuBoard board) = SudokuBoard (map (map eraseLocation) board)
 
 -- | Erase square if it isn't an original value.
 eraseLocation :: Square -> Square
-eraseLocation oldSquare
-    | oldSquare == Empty = oldSquare
-    | isOrig oldSquare   = oldSquare
-    | otherwise          = Empty
+eraseLocation old
+    | old == Empty || isOrig old = old
+    | otherwise                  = Empty
 
 -- | Get the value in a particular square of a Sudoku board.
 getBoardValue :: SudokuBoard -> Location -> Square
@@ -170,11 +167,12 @@ prettyPrint (SudokuBoard board) = niceBoard
           restBoard     = drop 2 indexedBoard
 
           -- Also turn into a single string.
-          niceBoard     = unlines (map (List.intersperse ' ') (headBoard ++ sudokuSpacer hDiv restBoard))
+          niceBoard     = unlines (map (List.intersperse ' ')
+                                       (headBoard ++ sudokuSpacer hDiv restBoard))
 
 -- | Show either the number, or "_" for empty.
 instance Show Square where
-    show (Empty)          = "_"
+    show (Empty)   = "_"
     show (Val v _) = tail $ show v
 
 -- | Show a location as a tuple of coordinates.
@@ -225,9 +223,11 @@ checkList (x:xs)
     | length xs == 1 = if snd x == snd (head xs)
                            then Set.fromList [fst x, fst $ head xs]
                            else Set.empty
-    | otherwise   = answer
+    | otherwise      = answer
     where matchingY    = [fst y | y <- xs, snd x == snd y]
-          headMatching = if not (List.null matchingY) then fst x : matchingY else []
+          headMatching = if not (List.null matchingY)
+                            then fst x : matchingY
+                            else []
           answer       = Set.fromList headMatching `Set.union` checkList xs
 
 -- | Given an Int index of a subgrid, returns a list of Locations matching that subgrid.

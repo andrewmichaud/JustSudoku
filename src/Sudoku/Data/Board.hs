@@ -1,6 +1,5 @@
 {-# OPTIONS_HADDOCK not-home, show-extensions #-}
 {-|
-
 Module      : Board
 Description : Methods and datatypes for creating and manipulating Sudoku Boards.
 Copyright   : (c) Andrew Michaud, 2015
@@ -10,7 +9,6 @@ Stability   : experimental
 
 This module exports the methods to create a SudokuBoard, the types used to construct one, and
 all of the methods used to interact with one once it's created.
-
 -}
 
 module Sudoku.Data.Board (
@@ -35,7 +33,7 @@ module Sudoku.Data.Board (
 -- * Printing
 , prettyPrint
 
--- * Board Modification
+-- * Board Operations
 , getBoardValue
 , setBoardValue
 , eraseBoardValue

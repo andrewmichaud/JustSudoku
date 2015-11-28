@@ -15,23 +15,24 @@ addons:
 
 before_install:
     - mkdir -p ~/.local/bin
-    - export PATH=~/.local/bin:$PATH
+    - export PATH=/opt/ghc/$GHCVER/bin:$PATH
     - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-    - export PATH=/opt/ghc/7.8.4/bin:$PATH
+    - export PATH=~/.local/bin:$PATH
 
 install:
-    - stack init
-    - stack --no-terminal --skip-ghc-check setup
     - stack build
-    - stack --no-terminal --skip-ghc-check test --only-snapshot
 
 script:
-    - hlint .
-    - stack --no-terminal --skip-ghc-check test
+    - stack test
 
 after_script:
     # lol
+    - hlint .
     - hpc-coveralls spec --exclude-dir=test --display-report || true
 
 notifications:
     on_failure: always
+
+cache:
+    directories:
+        - $HOME/.stack
