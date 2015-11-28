@@ -4,17 +4,7 @@ sudo: false
 
 env: CABALVER=1.22 GHCVER=7.8.4
 
-addons:
-    apt:
-        sources:
-            - hvr-ghc
-        packages:
-            - ghc-7.8.4
-            - hlint
-            - hscolour
-
 before_install:
-    - export STACK_YAML=stack-$GHCVER.yaml
     - export PATH=/opt/ghc/$GHCVER/bin:$PATH
     - mkdir -p ~/.local/bin
     - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
