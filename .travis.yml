@@ -11,6 +11,7 @@ before_install:
     - export PATH=~/.local/bin:$PATH
 
 install:
+    - stack setup
     - stack build
 
 script:
