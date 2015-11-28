@@ -16,7 +16,6 @@ their moves.
 
 module Sudoku.Control.Move where
 
-import Control.Monad.Except -- For custom errors.
 import Data.Set
 
 import Sudoku.Data.Board
@@ -31,7 +30,7 @@ data Move = Check                    | -- ^ Check board.
 
 -- | Kinds of move errors that can occur.
 data MoveError = InvalidBoardError (Set Location) | -- ^ Returned locations are invalid.
-                 InvalidValueError Int            | -- ^ Provided value is invalid.
+                 InvalidValueError Int            | -- ^ Provided value is invalid for Sudoku.
                  NaNError String                  | -- ^ Provided value is not a number.
                  OtherError String                | -- ^ Other error not described above.
                  OutOfBoundsError Int Int         | -- ^ Provided location is out of bounds.
