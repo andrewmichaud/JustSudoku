@@ -18,12 +18,11 @@ install:
     - stack install hlint
 
 script:
-    - stack test :justsudoku-test --no-terminal --coverage
+    - stack test spec --no-terminal --coverage
 
 after_script:
     - hlint .
-    - travis_retry curl -L https://github.com/rubik/stack-hpc-coveralls/releases/download/v0.0.1.0/shc-linux-x64-$GHC_VER.tar.bz2 | tar -xj
-    - ./shc JustSudoku justsudoku-test
+    - ./shc JustSudoku spec
 
 notifications:
     on_failure: always
