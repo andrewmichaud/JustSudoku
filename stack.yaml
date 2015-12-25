@@ -1,0 +1,5 @@
+flags: {}
+packages:
+- '.'
+extra-deps: [docopt-0.7.0.4]
+resolver: lts-3.14
