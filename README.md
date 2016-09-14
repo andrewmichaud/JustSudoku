@@ -2,6 +2,7 @@ Just Sudoku
 ============
 ![Haskell Programming Language](https://img.shields.io/badge/language-Haskell-blue.svg)
 [![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg)](https://tldrlegal.com/license/bsd-3-clause-license-%28revised%29)
+[![Stories in Ready](https://badge.waffle.io/andrewmichaud/JustSudoku.png?label=ready&title=Ready)](http://waffle.io/andrewmichaud/JustSudoku)
 
 dev
 [![Build Status](https://travis-ci.org/andrewmichaud/JustSudoku.svg?branch=dev)](https://travis-ci.org/andrewmichaud/JustSudoku)
