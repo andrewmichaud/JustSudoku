@@ -14,7 +14,6 @@ before_install:
     - stack setup
 
 install:
-    - stack clean
     - stack build
     - stack install hpc-coveralls
 
@@ -29,6 +28,6 @@ after_script:
 notifications:
     on_failure: always
 
-# cache:
-#     directories:
-#         - $HOME/.stack
+cache:
+    directories:
+        - $HOME/.stack
