@@ -23,7 +23,7 @@ script:
 after_script:
     - hlint .
     # - ./shc JustSudoku spec
-    - hpc-coveralls
+    - hpc-coveralls spec
 
 notifications:
     on_failure: always
