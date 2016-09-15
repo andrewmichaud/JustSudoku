@@ -29,6 +29,6 @@ after_script:
 notifications:
     on_failure: always
 
-cache:
-    directories:
-        - $HOME/.stack
+# cache:
+#     directories:
+#         - $HOME/.stack
