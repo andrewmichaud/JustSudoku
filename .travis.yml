@@ -2,7 +2,7 @@ language: haskell
 
 sudo: required
 
-env: CABALVER=1.22 GHCVER=7.8.4
+env: CABALVER=1.22 GHCVER=7.8.4 STACK_YAML=stack.yaml
 
 before_install:
     - export PATH=/opt/ghc/$GHCVER/bin:$PATH
@@ -18,12 +18,12 @@ install:
     - stack install hpc-coveralls
 
 script:
-    - stack test --no-terminal --coverage
+  - stack test :spec-test --no-terminal --coverage
 
 after_script:
     - hlint .
-    # - ./shc JustSudoku spec
-    - hpc-coveralls spec
+    - travis_retry curl -L https://github.com/rubik/stack-hpc-coveralls/releases/download/v0.0.3.0/shc-linux-x64-$GHCVER.tar.bz2 | tar -xj
+    - ./shc spec spec-test
 
 notifications:
     on_failure: always
