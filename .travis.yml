@@ -9,20 +9,22 @@ before_install:
     - mkdir -p ~/.local/bin
     - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
     - export PATH=~/.local/bin:$PATH
+    - sudo apt-get -qq update
+    - sudo apt-get install -y hlint
     - stack setup
     - stack init
 
 install:
     - stack build
     - stack install hpc-coveralls
-    - stack install hlint
 
 script:
     - stack test spec --no-terminal --coverage
 
 after_script:
     - hlint .
-    - ./shc JustSudoku spec
+    # - ./shc JustSudoku spec
+    - hpc-coveralls
 
 notifications:
     on_failure: always
