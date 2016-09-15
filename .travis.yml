@@ -18,7 +18,7 @@ install:
     - stack install hpc-coveralls
 
 script:
-    - stack test spec --no-terminal --coverage
+    - stack test --no-terminal --coverage
 
 after_script:
     - hlint .
