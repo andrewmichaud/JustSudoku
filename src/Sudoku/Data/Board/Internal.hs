@@ -172,7 +172,7 @@ prettyPrint (SudokuBoard board) = niceBoard
 
 -- | Show either the number, or "_" for empty.
 instance Show Square where
-    show (Empty)   = "_"
+    show Empty   = "_"
     show (Val v _) = tail $ show v
 
 -- | Show a location as a tuple of coordinates.

@@ -133,13 +133,13 @@ move board (Erase row col)
 
 -- Check if any squares are invalid. "Error" and show invalid squares if any exist.
 -- In any case, the original board will remain.
-move board (Check)
+move board Check
     | not (Set.null invalidSquares) = Left $ InvalidBoardError invalidSquares
     | otherwise                     = Right board
     where invalidSquares = checkBoard board
 
-move board (Reset) = Right $ resetBoard board
-move _ (Quit)      = Left QuitError
+move board Reset = Right $ resetBoard board
+move _ Quit      = Left QuitError
 
 -- Command-line stuff
 
