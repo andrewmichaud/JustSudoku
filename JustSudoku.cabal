@@ -1,6 +1,8 @@
 name:               JustSudoku
 version:            0.9.1
-synopsis:           GTK+/Terminal Haskell Sudoku app
+synopsis:           Command-Line Sudoku app
+description:        A simple command-line Sudoku app. Has a single hard-coded test, and lets you
+-- solve it and check your solution after every addition.
 homepage:           https://www.github.com/andrewmichaud/JustSudoku.git
 license:            BSD3
 license-file:       LICENSE
@@ -13,7 +15,7 @@ cabal-version:      >= 1.22
 
 executable JustSudoku
     main-is:          Main.hs
-    build-depends:    base >= 4.7, mtl >= 2.2, containers >= 0.5.5.1
+    build-depends:    base >= 4.7 && < 5, mtl >= 2.2 && < 3, containers >= 0.5.5 && < 0.6
     hs-source-dirs:   src
     default-language: Haskell2010
 
@@ -21,7 +23,7 @@ library
     hs-source-dirs:   src
     exposed-modules:  Util.Other, Sudoku.Control.Move, Sudoku.Control.Parse,
                       Sudoku.Data.Board.Internal
-    build-depends:    base >= 4.7, mtl >= 2.2, containers >= 0.5.5.1
+    build-depends:    base >= 4.7 && < 5, mtl >= 2.2 && < 3, containers >= 0.5.5 && < 0.6
     default-language: Haskell2010
 
 test-suite JustSudoku-test
@@ -29,5 +31,6 @@ test-suite JustSudoku-test
     ghc-options:      -Wall -O
     hs-source-dirs:   test
     main-is:          JustSudokuSpec.hs
-    build-depends:    base >= 4.7, containers >= 0.5.5.1, JustSudoku, hspec >= 2.0
+    build-depends:    base >= 4.7 && < 5, containers >= 0.5.5 && < 0.6, JustSudoku,
+                      hspec >= 2.2.0 && < 2.4.0
     default-language: Haskell2010
