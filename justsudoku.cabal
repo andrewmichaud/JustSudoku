@@ -1,11 +1,11 @@
 name:               JustSudoku
 version:            0.8.0.0
 synopsis:           GTK+/Terminal Haskell Sudoku app
-homepage:           https://www.github.com/andrewmichaud/JustSudoku.git
+homepage:           https://www.github.com/alixnovosi/JustSudoku.git
 license:            BSD3
 license-file:       LICENSE
 author:             Andrew Michaud
-maintainer:         andrewjmichaud@gmail.com
+maintainer:         dev@drew.life
 category:           Game
 build-type:         Simple
 extra-source-files: README.md

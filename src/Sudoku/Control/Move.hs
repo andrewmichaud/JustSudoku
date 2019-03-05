@@ -2,9 +2,9 @@
 
 Module      : Control.Move
 Description : Defines valid Moves and MoveErrors for Sudoku application.
-Copyright   : (c) Andrew Michaud, 2015
+Copyright   : (c) Andrew Michaud, 2015-2019
 License     : BSD3
-Maintainer  : andrewjmichaud@gmail.com
+Maintainer  : dev@drew.life
 Stability   : experimental
 
 This module describes the Moves a player is allowed to make on the Sudoku board.  It also

@@ -1,9 +1,9 @@
 {-|
 Module      : Util.Other
 Description : Hopefully useful utility functions.
-Copyright   : (c) Andrew Michaud, 2015
+Copyright   : (c) Andrew Michaud, 2015-2019
 License     : BSD3
-Maintainer  : andrewjmichaud@gmail.com
+Maintainer  : dev@drew.life
 Stability   : experimental
 
 This module houses any methods that don't quite fit in anywhere else (or are generic enough to

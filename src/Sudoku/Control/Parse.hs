@@ -2,9 +2,9 @@
 
 Module      : Control.Parse
 Description : Methods for parsing moves and for creating locations and squares.
-Copyright   : (c) Andrew Michaud, 2015
+Copyright   : (c) Andrew Michaud, 2015-2019
 License     : BSD3
-Maintainer  : andrewjmichaud@gmail.com
+Maintainer  : dev@drew.life
 Stability   : experimental
 
 This module includes a parseMove method, which takes a string and returns a Move (of those

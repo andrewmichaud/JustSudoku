@@ -2,9 +2,9 @@
 
 Module      : Main
 Description :  Handles user input and controlling everything else.
-Copyright   : (c) Andrew Michaud, 2015
+Copyright   : (c) Andrew Michaud, 2015-2019
 License     : BSD3
-Maintainer  : andrewjmichaud@gmail.com
+Maintainer  : dev@drew.life
 Stability   : experimental
 
 This module provides several things.  First, it provides a control loop for receiving and

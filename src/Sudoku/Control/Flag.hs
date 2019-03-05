@@ -2,9 +2,9 @@
 
 Module      : Control.Flag
 Description : Defines flags and option descriptions.
-Copyright   : (c) Andrew Michaud, 2015
+Copyright   : (c) Andrew Michaud, 2015-2019
 License     : BSD3
-Maintainer  : andrewjmichaud@gmail.com
+Maintainer  : dev@drew.life
 Stability   : experimental
 
 This module describes the flags permitted for the Sudoku application.  The flags exist as a data
